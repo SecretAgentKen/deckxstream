@@ -1,0 +1,21 @@
+{
+  "name": "deckxstream",
+  "version": "0.0.1",
+  "description": "Elgato Stream Deck controller",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "deckxstream": "app.js"
+  },
+  "author": "SecretAgentKen",
+  "license": "MIT",
+  "dependencies": {
+    "@julusian/jpeg-turbo": "^1.0.1",
+    "canvas": "^2.6.1",
+    "elgato-stream-deck": "^4.0.1",
+    "robotjs": "git+https://github.com/octalmage/robotjs.git",
+    "sharp": "^0.27.0"
+  }
+}
