@@ -140,21 +140,21 @@ Options:
 
 <a name="version"></a>`deckxstream-version` - Version number for the JSON file schema. Currently only `1`.
 
-<a name="brightness"></a>`brightness` - Brightness to set to at start of application. Supports `0-100`.
+<a name="brightness"></a>`brightness` - Brightness to set to at start of application. Supports `0-100`. (Default: `90`)
 
-<a name="device"></a>`device` - The device name to use if multiple Stream Decks are in use (currently UNUSED)
+<a name="device"></a>`device` - The device serial number to use if multiple Stream Decks are in use. (Default: first found)
 
-<a name="screensaver"></a>`screensaver` - Configuration block for the screensaver
+<a name="screensaver"></a>`screensaver` - Configuration block for the screensaver (Optional)
 
 | Value     | Required | Notes|
 |-----------|----------|------|
 | animation | Yes      | Filename of the GIF to use as a screensaver 
-| brightness| No       | Brightness to change the deck to when screensaver turns on 
+| brightness| No       | Brightness to change the deck to when screensaver turns on
 | timeoutMinutes | Yes | Time in minutes until screensaver kicks in 
 
-<a name="sticky"></a>`sticky` - Sticky buttons. These buttons are available on EVERY page. If another page tries to load a button in the same location, it will be ignored. Entries follow the <a href="#button">button</a> format in an array.
+<a name="sticky"></a>`sticky` - Sticky buttons. These buttons are available on EVERY page. If another page tries to load a button in the same location, it will be ignored. Entries follow the <a href="#button">button</a> format in an array. (Optional)
 
-<a name="pages"></a>`pages` - Pages for deck. On startup, a `default` page will be loaded. 
+<a name="pages"></a>`pages` - Pages for deck. On startup, a `default` page will be loaded. (Optional)
 
 | Value    | Required | Notes|
 |----------|----------|------

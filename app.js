@@ -4,12 +4,17 @@ const {program} = require('commander');
 const path = require('path');
 const fs = require('fs');
 const robot = require("robotjs");
-const {openStreamDeck} = require('elgato-stream-deck');
+const {openStreamDeck, listStreamDecks} = require('elgato-stream-deck');
 const DeckManager = require('./lib/deckManager');
+let config;
+let devInfo;
 
 program
+	.version(require('./package.json').version)
 	.option('-c, --config <file>', 'Configuration file to use.', path.join(process.env.HOME, '.deckxstream.json'))
-	.option('-k, --keys', 'Outputs the keyIndex values to each button on the Stream Deck and exits')
+	.option('-l, --list', 'Show all detected Stream Decks and exit')
+	.option('-i, --init [device]', 'Output an initial JSON file for the specified device if supplied')
+	.option('-k, --keys [device]', 'Outputs the keyIndex values to each button on the specified Stream Deck (or first found) and exits')
 
 program.parse(process.argv);
 
@@ -17,11 +22,30 @@ const options = program.opts();
 
 robot.setKeyboardDelay(1);
 
-let config;
-if ( options.keys ) {
+const devices = listStreamDecks();
+
+if ( devices.length === 0 ) exitError('No Steam Decks found! Have you followed the instructions for elgato-stream-deck?');
+
+if ( options.list ) {
+	console.log(devices);
+	process.exit(0);	
+}
+
+if ( options.init || options.keys ) {
+	devInfo = getDevice(options.init || options.keys);
+} else if ( options.config ) {
+	if ( !fs.existsSync(options.config) ) exitError(`Specified config ${options.config} does not exist!`);
+	config = require(options.config);
+	devInfo = getDevice(config.device);
+}
+
+const streamDeck = openStreamDeck(devInfo.path);
+
+if ( options.keys || options.init ) {
 	config = {
 		"deckxstream-version": 1,
 		"brightness": 90,
+		"device": devInfo.serialNumber,
 		"pages": [
 			{
 				"page_name": "default",
@@ -31,14 +55,16 @@ if ( options.keys ) {
 			}
 		]
 	}
-	setTimeout(process.exit, 2000);
-} else if ( options.config ) {
-	if ( !fs.existsSync(options.config) ) exitError(`Specified config ${options.config} does not exist!`);
-	config = require(options.config);
+} 
+
+if ( options.init ) {
+	console.log(JSON.stringify(config,null,2));
+	process.exit(0);
 }
 
-// FIXME - Use the specified deck id here
-const streamDeck = openStreamDeck();
+if ( options.keys ) {
+	setTimeout(process.exit, 2000);
+}
 
 const buttons = new Array(streamDeck.NUM_KEYS);
 const deckMgr = new DeckManager(streamDeck, buttons, config);
@@ -46,9 +72,8 @@ let ssTimer;
 let ssActive = false;
 
 streamDeck.clearAllKeys();
-if ( config.brightness ) {
-	streamDeck.setBrightness(config.brightness);
-}
+streamDeck.setBrightness(config.brightness || 90);
+
 if ( config.screensaver ) {
 	ssTimer = checkScreensaver();
 }
@@ -79,6 +104,14 @@ function checkScreensaver(){
 		ssTimer = null;
 		deckMgr.startScreensaver();
 	}, config.screensaver.timeoutMinutes * 60 * 1000);
+}
+
+function getDevice(str){
+	let result = devices.find((dev)=>{
+		return dev.serialNumber === str || dev.path === str || dev.model === str;
+	});
+	if ( result ) return result;
+	return devices[0];
 }
 
 function exitError(err){
