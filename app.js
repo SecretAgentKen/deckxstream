@@ -8,6 +8,8 @@ const {openStreamDeck, listStreamDecks} = require('elgato-stream-deck');
 const DeckManager = require('./lib/deckManager');
 let config;
 let devInfo;
+// If you press a button on the deck and then start, you'll get an initial phantom press. Prevent that at startup.
+let ignoreInput = true;
 
 program
 	.version(require('./package.json').version)
@@ -81,6 +83,8 @@ if ( config.screensaver ) {
 deckMgr.changePage("default");
 
 streamDeck.on('down', (keyIndex)=>{
+	if ( ignoreInput ) return;
+
 	if ( ssActive ) {
 		deckMgr.stopScreensaver();
 		ssActive = false;
@@ -97,6 +101,9 @@ streamDeck.on('down', (keyIndex)=>{
 		ssTimer = checkScreensaver();
 	}
 });
+
+// Now that we're listening, allow input.
+setTimeout(()=>ignoreInput = false, 200);
 
 function checkScreensaver(){
 	return setTimeout(()=>{
