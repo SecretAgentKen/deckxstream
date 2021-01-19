@@ -4,7 +4,8 @@
   "description": "Elgato Stream Deck controller",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "npx eslint --fix app.js lib/**"
   },
   "bin": {
     "deckxstream": "app.js"
@@ -14,8 +15,12 @@
   "dependencies": {
     "@julusian/jpeg-turbo": "^1.0.1",
     "canvas": "^2.6.1",
+    "commander": "^7.0.0",
     "elgato-stream-deck": "^4.0.1",
     "robotjs": "git+https://github.com/octalmage/robotjs.git",
     "sharp": "^0.27.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.18.0"
   }
 }

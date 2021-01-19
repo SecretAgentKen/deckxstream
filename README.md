@@ -21,11 +21,22 @@ Clone the repo
 
 `$ npm install`
 
+## Running
+
 `$ node app`
+
+```
+Usage: app [options]
+
+Options:
+  -c, --config <file>  Configuration file to use. (default: "$HOME/.deckxstream.json")
+  -k, --keys           Outputs the keyIndex values to each button on the Stream Deck and exits
+  -h, --help           display help for command
+```
 
 ## Configuration
 
-`deckxstream` requires a configuration file. By default, it will attempt to load `config.json` in the current directory. If not available, it will simply clear the Stream Deck and show the key numbers on each of the buttons.
+`deckxstream` requires a configuration file. By default, it will attempt to load `.deckxstream.json` in the HOME directory. 
 
 > Example
 ```json
