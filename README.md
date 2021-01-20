@@ -1,6 +1,6 @@
 # deckxstream
 
-> **`deckxstream` is NOT ready for widespread use yet. Expect bugs and nastiness until some polish has been applied.**
+> **`deckxstream` is NOT ready for widespread use yet. Expect bugs, configuration changes, etc. until some polish has been applied.**
 
 `deckxstream` is a controller application for the [Elgato Stream Deck](https://www.elgato.com/en/gaming/stream-deck). The application was created to allow Linux usage of a Stream Deck but the application should allow for cross-platform usage. The application relies heavily on the [elgato-stream-deck](https://github.com/Julusian/node-elgato-stream-deck) NPM library. **Be sure to follow their udev and native dependency instructions applicable to your platform or else this application will not work!**
 
@@ -79,14 +79,23 @@ Options:
                     "changePage": "retroarch"
                 },
                 {
+                    "keyIndex": 3,
+                    "dynamic": {
+                        "command": "resources/randomButton.js -r",
+                        "persistent": true
+                    }
+                },
+                {
                     "keyIndex": 5,
                     "icon": "/some/dir/staticicondyntext.png",
-                    "dynamic": "bspc query -N | wc -l | awk '{ print \"{\\\"text\\\": \"$1\"}\"}'",
-                    "dynamicInterval": 5000
+                    "dynamic": {
+                        "command": "resources/randomButton.js",
+                        "interval": 2000
+                    }
                 },
                 {
                     "keyIndex": 6,
-                    "icon": "data:image/svg+xml;base64,PD94bWwgdmVy..."
+                    "icon": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2NQu1DzHwAFBAJyENnpTwAAAABJRU5ErkJggg=="
                 }
                 {
                     "keyIndex": 10,
@@ -180,8 +189,15 @@ Options:
 | command            | No       | On click, run the given command using `child_process.spawn`
 | sendkey            | No       | On click, send the given hotkey. Follows the naming of keys from [RobotJS](http://robotjs.io/docs/syntax#keys). To support meta keys, supply them at the start seperated by plus signs. Example: `control+alt+delete`.
 | sendtext           | No       | On click, send the given string to active window. 
-| dynamic            | No       | Run the given command using `child_process.spawn` and listen on standard output based on the `dynamicInterval`. The output must be properly formed JSON. The JSON will overwrite any of the above values until the next interval. See below for an example.
-| dynamicInterval    | No (Yes if dynamic) | Time in ms between running the `dynamic` command. Keep in mind that if the `text` or `icon` of the button is changed, this can have an impact on system resources if the timeout is very short.
+| dynamic            | No       | Dynamically sets up the button. Runs a given command to populate any of the other fields in this structure. See the dynamic structure below. NOTE: **You CANNOT override `keyIndex` or `dynamic` with the results of the command. 
+
+#### Dynamic structure
+
+| Value              | Required | Notes
+|--------------------|----------|------
+| command            | Yes      | The command to run via `child_process.spawn` and listen on standard output. The output must be properly formed JSON. The JSON will overwrite any of the button configuration values until the next output. See below for an example.
+| persistent         | No       | If true, the interval is ignored. Instead, the command is expected to be persistent and continously output JSON whenever a change is wanted. (false by default)
+| interval           | No (Yes if not persistent) | Time in ms between running the `dynamic` command. Keep in mind that if the `text` or `icon` of the button is changed, this can have an impact on system resources if the timeout is very short.
 
 #### Example of `dynamic` overwrite
 
@@ -193,8 +209,10 @@ Given a button config of
     "keyIndex": 0,
     "icon": "/dir/mail.png",
     "command": "checkEmail.sh",
-    "dynamic": "hasEmail.sh",
-    "dynamicInterval": 60000
+    "dynamic": {
+        "command": "hasEmail.sh",
+        "interval": 60000
+    }
 }
 ```
 If `hasEmail.sh` returns
@@ -211,8 +229,10 @@ The button will now be
     "icon": "/dir/mailanimated.gif",
     "text": "6 New!",
     "command": "checkEmail.sh",
-    "dynamic": "hasEmail.sh",
-    "dynamicInterval": 60000
+    "dynamic": {
+        "command": "hasEmail.sh",
+        "interval": 60000
+    }
 }
 ```
 If it then returns
@@ -229,8 +249,10 @@ Then the button becomes
     "icon": "/dir/mail.png",
     "text": "0 New",
     "command": "checkEmail.sh",
-    "dynamic": "hasEmail.sh",
-    "dynamicInterval": 60000
+    "dynamic": {
+        "command": "hasEmail.sh",
+        "interval": 60000
+    }
 }
 ```
 The original configuration is used as the base between runs, not the the results of the previous run.
