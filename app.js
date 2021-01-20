@@ -50,7 +50,7 @@ if ( options.keys || options.init ) {
 		"device": devInfo.serialNumber,
 		"pages": [
 			{
-				"page_name": "default",
+				"pageName": "default",
 				"buttons": new Array(streamDeck.NUM_KEYS).fill(undefined).map((v,i)=>{
 					return {keyIndex: i, text: i.toString()};
 				})

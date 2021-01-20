@@ -29,8 +29,11 @@ Clone the repo
 Usage: app [options]
 
 Options:
+  -V, --version        output the version number
   -c, --config <file>  Configuration file to use. (default: "$HOME/.deckxstream.json")
-  -k, --keys           Outputs the keyIndex values to each button on the Stream Deck and exits
+  -l, --list           Show all detected Stream Decks and exit
+  -i, --init [device]  Output an initial JSON file for the specified device if supplied
+  -k, --keys [device]  Outputs the keyIndex values to each button on the specified Stream Deck (or first found) and exits
   -h, --help           display help for command
 ```
 
@@ -53,8 +56,11 @@ Options:
         {
             "keyIndex": 0,
             "icon": "/some/dir/home.png",
-            "change_page": "default",
-            "text": "Home"
+            "changePage": "default",
+            "text": "Home",
+            "textSettings": {
+                "fillStyle": "blue"
+            }
         },
         {
             "keyIndex": 4,
@@ -65,12 +71,12 @@ Options:
     ],
     "pages": [
         {
-            "page_name": "default",
+            "pageName": "default",
             "buttons": [
                 {
                     "keyIndex": 1,
                     "icon": "/some/dir/retroarch.svg",
-                    "change_page": "retroarch"
+                    "changePage": "retroarch"
                 },
                 {
                     "keyIndex": 5,
@@ -90,19 +96,19 @@ Options:
                 {
                     "keyIndex": 13,
                     "icon": "redshift.svg",
-                    "change_brightness": 10,
+                    "changeBrightness": 10,
                     "command": "redshift -x; redshift -O 4000 -b .5"
                 },
                 {
                     "keyIndex": 14,
                     "icon": "brightness.svg",
-                    "change_brightness": 70,
+                    "changeBrightness": 70,
                     "command": "redshift -x"
                 }
             ]
         },
         {
-            "page_name": "retroarch",
+            "pageName": "retroarch",
             "buttons": [
                 {
                     "keyIndex": 1,
@@ -158,7 +164,7 @@ Options:
 
 | Value    | Required | Notes|
 |----------|----------|------
-| page_name| Yes      | The name for the page. `default` is loaded on startup. Use `change_page` to go to a different page.
+| pageName| Yes      | The name for the page. `default` is loaded on startup. Use `changePage` to go to a different page.
 | buttons  | Yes      | Array of <a href=#button>buttons</a> to load on the page.
 
 #### <a name="button"></a> Button Format
@@ -168,10 +174,11 @@ Options:
 | keyIndex           | Yes      | The key to bind to. For example, the standard Stream Deck would have 0-14. Run `deckxstream` without a configuration file to see the numbering for yours.
 | icon               | No       | Either the filename or a Base64 data URI for an image to display in the button. The image will be automatically resized (respecting aspect ratio) to fit.
 | text               | No       | A text label to place at the bottom of the button. If an `icon` is specified, it will be resized to allow the text to fit.
-| change_page        | No       | On click, change the deck to the named page from the array of <a href="#pages">pages</a>.
-| change_brightness  | No       | On click, change the brightness of the deck. Values of `0-100` supported.
+| textSettings       | No       | Changes the look of the label text. Use an object with properties for [CanvasRenderingContext2D](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D) like `fillStyle` and `font`.
+| changePage        | No       | On click, change the deck to the named page from the array of <a href="#pages">pages</a>.
+| changeBrightness  | No       | On click, change the brightness of the deck. Values of `0-100` supported.
 | command            | No       | On click, run the given command using `child_process.spawn`
-| sendkey            | No       | On click, send the given hotkey. Follows the naming of keys from <a href="http://robotjs.io/docs/syntax#keys">RobotJS</a>. To support meta keys, supply them at the start seperated by plus signs. Example: `control+alt+delete`.
+| sendkey            | No       | On click, send the given hotkey. Follows the naming of keys from [RobotJS](http://robotjs.io/docs/syntax#keys). To support meta keys, supply them at the start seperated by plus signs. Example: `control+alt+delete`.
 | sendtext           | No       | On click, send the given string to active window. 
 | dynamic            | No       | Run the given command using `child_process.spawn` and listen on standard output based on the `dynamicInterval`. The output must be properly formed JSON. The JSON will overwrite any of the above values until the next interval. See below for an example.
 | dynamicInterval    | No (Yes if dynamic) | Time in ms between running the `dynamic` command. Keep in mind that if the `text` or `icon` of the button is changed, this can have an impact on system resources if the timeout is very short.
