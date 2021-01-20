@@ -74,7 +74,7 @@ let ssTimer;
 let ssActive = false;
 
 streamDeck.clearAllKeys();
-streamDeck.setBrightness(config.brightness || 90);
+deckMgr.setBrightness(config.brightness || 90);
 
 if ( config.screensaver ) {
 	ssTimer = checkScreensaver();
