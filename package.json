@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "npx eslint --fix app.js lib/** resources/**"
+    "lint": "npx eslint --fix app.js lib/*.js resources/*.js"
   },
   "bin": {
     "deckxstream": "app.js"

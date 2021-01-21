@@ -1,7 +1,5 @@
 # deckxstream
 
-> **`deckxstream` is NOT ready for widespread use yet. Expect bugs, configuration changes, etc. until some polish has been applied.**
-
 `deckxstream` is a controller application for the [Elgato Stream Deck](https://www.elgato.com/en/gaming/stream-deck). The application was created to allow Linux usage of a Stream Deck but the application should allow for cross-platform usage. The application relies heavily on the [elgato-stream-deck](https://github.com/Julusian/node-elgato-stream-deck) NPM library. **Be sure to follow their udev and native dependency instructions applicable to your platform or else this application will not work!**
 
 ## Features
@@ -9,6 +7,7 @@
 * Support for multiple image formats including PNG, SVG, and animated GIF
 * Support for hotkeys and text input (via [RobotJS](https://www.npmjs.com/package/robotjs)), application running (via `child_process.spawn`)
 * Dynamic buttons where any command/icon/text can be replaced via output from a running application
+* Dynamic pages where the buttons are specified via output of a command
 * Sticky buttons available on any page
 * Data URI support for icons so they don't even need to be on disk
 * Screensaver for full panel animations
@@ -146,6 +145,10 @@ Options:
                     "text": "Load"
                 }
             ]
+        },
+        {
+            "pageName": "dyn",
+            "dynamicPage": "resources/randomPage.js -k 15"
         }
     ]
 }
@@ -174,7 +177,8 @@ Options:
 | Value    | Required | Notes|
 |----------|----------|------
 | pageName| Yes      | The name for the page. `default` is loaded on startup. Use `changePage` to go to a different page.
-| buttons  | Yes      | Array of <a href=#button>buttons</a> to load on the page.
+| dynamicPage | No (Yes if no buttons) | Command to run to generate the page of buttons. Will be run by `child_process.spawn` when page is switched to. The called application should return `{"buttons":[]}` with the array filled with  <a href="#button">buttons</a>. NOTE: Response must be JSON.
+| buttons  | No (Yes if not dynamic)      | Array of <a href="#button">buttons</a> to load on the page.
 
 #### <a name="button"></a> Button Format
 
@@ -189,7 +193,7 @@ Options:
 | command            | No       | On click, run the given command using `child_process.spawn`
 | sendkey            | No       | On click, send the given hotkey. Follows the naming of keys from [RobotJS](http://robotjs.io/docs/syntax#keys). To support meta keys, supply them at the start seperated by plus signs. Example: `control+alt+delete`.
 | sendtext           | No       | On click, send the given string to active window. 
-| dynamic            | No       | Dynamically sets up the button. Runs a given command to populate any of the other fields in this structure. See the dynamic structure below. NOTE: **You CANNOT override `keyIndex` or `dynamic` with the results of the command. 
+| dynamic            | No       | Dynamically sets up the button. Runs a given command to populate any of the other fields in this structure. See the dynamic structure below. NOTE: **You CANNOT override `keyIndex` or `dynamic` with the results of the command.**
 
 #### Dynamic structure
 

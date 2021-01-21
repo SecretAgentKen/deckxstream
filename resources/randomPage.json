@@ -1,0 +1,10 @@
+{
+  "deckxstream-version": 1,
+  "brightness": 90,
+  "pages": [
+    {
+      "pageName": "default",
+      "dynamicPage": "resources/randomPage.js -k 15"
+    }
+  ]
+}
