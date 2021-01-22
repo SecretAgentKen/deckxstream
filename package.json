@@ -10,6 +10,9 @@
   "bin": {
     "deckxstream": "app.js"
   },
+  "files": [
+    "/lib"
+  ],
   "author": "secretagentken",
   "license": "MIT",
   "dependencies": {
