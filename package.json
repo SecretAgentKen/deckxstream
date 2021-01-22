@@ -3,6 +3,14 @@
   "version": "0.0.2",
   "description": "Elgato Stream Deck controller",
   "main": "app.js",
+  "homepage": "https://github.com/SecretAgentKen/deckxstream#readme",
+  "repository": {
+    "type": "git",
+    "repository": "https://github.com/SecretAgentKen/deckxstream"
+  },
+  "bugs": {
+    "url": "https://github.com/SecretAgentKen/deckxstream/issues"
+  },
   "scripts": {
     "test": "npx mocha",
     "lint": "npx eslint --fix app.js lib/*.js resources/*.js test/*.js"
