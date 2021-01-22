@@ -1,6 +1,6 @@
 {
   "name": "deckxstream",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Elgato Stream Deck controller",
   "main": "app.js",
   "scripts": {
