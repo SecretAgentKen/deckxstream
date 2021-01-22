@@ -14,18 +14,14 @@
 
 ## Installation
 
-> NOTE: This is not currently in NPM, so use git for now.
-
-Clone the repo
-
-`$ npm install`
+`$ npm install -g deckxstream`
 
 ## Running
 
-`$ node app`
+`$ deckxstream`
 
 ```
-Usage: app [options]
+Usage: deckxstream [options]
 
 Options:
   -V, --version        output the version number
