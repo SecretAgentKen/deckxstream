@@ -4,7 +4,7 @@ const sharp = require('sharp');
 const {program} = require('commander');
 
 program
-	.option('-r, --repeat', 'output a new entry every 5 seconds')
+	.option('-r, --repeat', 'output a new entry every 5 seconds');
 
 program.parse(process.argv);
 
@@ -18,7 +18,7 @@ genButton();
 function genButton(){
 	let result = {};
 	let color = {r: rand(0,256), g: rand(0,256), b: rand(0,256)};
-	result.textSettings = {fillStyle: `rgb(${color.r},${color.g},${color.b})`} 
+	result.textSettings = {fillStyle: `rgb(${color.r},${color.g},${color.b})`}; 
 	sharp({create:{width: 1, height: 1, channels: 3, background: color}})
 		.removeAlpha()
 		.png()

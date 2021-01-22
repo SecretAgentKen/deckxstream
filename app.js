@@ -16,7 +16,7 @@ program
 	.option('-c, --config <file>', 'Configuration file to use.', path.join(process.env.HOME, '.deckxstream.json'))
 	.option('-l, --list', 'Show all detected Stream Decks and exit')
 	.option('-i, --init [device]', 'Output an initial JSON file for the specified device if supplied')
-	.option('-k, --keys [device]', 'Outputs the keyIndex values to each button on the specified Stream Deck (or first found) and exits')
+	.option('-k, --keys [device]', 'Outputs the keyIndex values to each button on the specified Stream Deck (or first found) and exits');
 
 program.parse(process.argv);
 
@@ -56,7 +56,7 @@ if ( options.keys || options.init ) {
 				})
 			}
 		]
-	}
+	};
 } 
 
 if ( options.init ) {

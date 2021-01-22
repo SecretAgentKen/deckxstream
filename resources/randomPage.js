@@ -3,7 +3,7 @@
 const {program} = require('commander');
 
 program
-	.requiredOption('-k, --keys <keys>', 'Number of keys to generate buttons for')
+	.requiredOption('-k, --keys <keys>', 'Number of keys to generate buttons for');
 
 program.parse(process.argv);
 
@@ -18,7 +18,7 @@ for(let i = 0; i < options.keys; i++){
 			command: "resources/randomButton.js -r",
 			persistent: true
 		}
-	})
+	});
 }
 
 console.log(JSON.stringify(result));
