@@ -10,7 +10,7 @@
   "bin": {
     "deckxstream": "app.js"
   },
-  "author": "SecretAgentKen",
+  "author": "secretagentken",
   "license": "MIT",
   "dependencies": {
     "@julusian/jpeg-turbo": "^1.0.1",
