@@ -12,7 +12,7 @@
     "url": "https://github.com/SecretAgentKen/deckxstream/issues"
   },
   "scripts": {
-    "test": "npx mocha",
+    "test": "npx nyc mocha",
     "lint": "npx eslint --fix app.js lib/*.js resources/*.js test/*.js"
   },
   "bin": {
@@ -36,6 +36,8 @@
     "eslint": "^7.18.0",
     "eslint-plugin-mocha": "^8.0.0",
     "mocha": "^8.2.1",
+    "nyc": "^15.1.0",
+    "rewire": "^5.0.0",
     "sinon": "^9.2.3",
     "sinon-chai": "^3.5.0"
   },
