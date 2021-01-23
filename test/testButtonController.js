@@ -28,7 +28,7 @@ describe('Buttons', function() {
 			if (bc) bc.stop();
 		});
 		it('should create a basic button with text', async function() {
-			this.timeout(5000); // Apparently github ci can fall behind
+			this.timeout(15000); // Apparently github ci can fall behind
 			let dm = new deckManager(deck, new Array(6).fill(), {});
 			bc = new buttonController(dm, {keyIndex: 0, icon: PIXEL, text: ' '});
 			let bc2 = new buttonController(dm, {keyIndex: 1, icon: PIXEL});
