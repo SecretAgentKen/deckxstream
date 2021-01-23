@@ -1,5 +1,5 @@
-[![npm version](https://img.shields.io/npm/v/deckxtream.svg)](https://npm.im/deckxtream)
-![Node CI](https://github.com/SecretAgentKen/deckxtream/workflows/NodeCI/badge.svg)
+[![npm version](https://img.shields.io/npm/v/deckxstream.svg)](https://npm.im/deckxstream)
+![Node CI](https://github.com/SecretAgentKen/deckxstream/workflows/NodeCI/badge.svg)
 
 # deckxstream
 
