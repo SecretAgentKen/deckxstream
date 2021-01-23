@@ -1,3 +1,6 @@
+[![npm version](https://img.shields.io/npm/v/deckxtream.svg)](https://npm.im/deckxtream)
+![Node CI](https://github.com/SecretAgentKen/deckxtream/workflows/NodeCI/badge.svg)
+
 # deckxstream
 
 `deckxstream` is a controller application for the [Elgato Stream Deck](https://www.elgato.com/en/gaming/stream-deck). The application was created to allow Linux usage of a Stream Deck but the application should allow for cross-platform usage. The application relies heavily on the [elgato-stream-deck](https://github.com/Julusian/node-elgato-stream-deck) NPM library. **Be sure to follow their udev and native dependency instructions applicable to your platform or else this application will not work!**
