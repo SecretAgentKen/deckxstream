@@ -38,7 +38,6 @@ describe('Deck Manager', function() {
 	describe('Screensaver', function() {
 		let dm;
 		beforeEach(function() {
-			buttons = new Array(6).fill(0).map(()=>{return {stop: sinon.spy(), start: sinon.spy()};});
 			dm = new deckManager(deck, buttons, {screensaver:{animation: require('path').join(__dirname,'../test_resources/blink.gif'), brightness: 10}});
 		});
 		afterEach(function() {
@@ -99,6 +98,7 @@ describe('Deck Manager', function() {
 
 	describe('Pages', function(){
 		let dm;
+		// eslint-disable-next-line
 		beforeEach(function() {
 			dm = new deckManager(deck, buttons, {pages:[{
 				pageName:"testPage",
@@ -143,7 +143,7 @@ describe('Deck Manager', function() {
 			dm.changePage('testPage');
 			buttons.forEach((b)=>{
 				expect(b).to.be.null;
-			})
+			});
 			so.stdout.emit('data', JSON.stringify({
 				buttons: [
 					{
@@ -162,21 +162,21 @@ describe('Deck Manager', function() {
 				} else {
 					expect(b).to.be.null;
 				}
-			})
+			});
 		});
 		it('should survive bad JSON', function(){
 			let con = sinon.stub(console, 'error');
 			dm.changePage('testPage');
 			buttons.forEach((b)=>{
 				expect(b).to.be.null;
-			})
+			});
 			expect(con).to.not.be.called;
 			so.stdout.emit('data', 'garbage');
 			buttons.forEach((b)=>{
 				expect(b).to.be.null;
-			})
+			});
 			expect(con).to.be.calledOnce;
-		})
+		});
 	});
 
 	describe('setBrightness', function(){
@@ -190,12 +190,12 @@ describe('Deck Manager', function() {
 			expect(dm.storedBrightness).to.eql(50);
 			dm.setBrightness(5);
 			expect(dm.storedBrightness).to.eql(5);
-		})
+		});
 
 		it('should set brightness on the deck', function(){
 			expect(deck.setBrightness).to.not.be.called;
 			dm.setBrightness(5);
 			expect(deck.setBrightness).to.be.calledOnce;
-		})
-	})
+		});
+	});
 });
