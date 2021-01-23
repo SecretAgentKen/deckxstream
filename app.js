@@ -26,24 +26,24 @@ robot.setKeyboardDelay(1);
 
 const devices = listStreamDecks();
 
-if ( devices.length === 0 ) exitError('No Steam Decks found! Have you followed the instructions for elgato-stream-deck?');
+if (devices.length === 0) exitError('No Steam Decks found! Have you followed the instructions for elgato-stream-deck?');
 
-if ( options.list ) {
+if (options.list) {
 	console.log(devices);
 	process.exit(0);	
 }
 
-if ( options.init || options.keys ) {
+if (options.init || options.keys) {
 	devInfo = getDevice(options.init || options.keys);
-} else if ( options.config ) {
-	if ( !fs.existsSync(options.config) ) exitError(`Specified config ${options.config} does not exist!`);
+} else if (options.config) {
+	if (!fs.existsSync(options.config)) exitError(`Specified config ${options.config} does not exist!`);
 	config = require(options.config);
 	devInfo = getDevice(config.device);
 }
 
 const streamDeck = openStreamDeck(devInfo.path);
 
-if ( options.keys || options.init ) {
+if (options.keys || options.init) {
 	config = {
 		"deckxstream-version": 1,
 		"brightness": 90,
@@ -51,7 +51,7 @@ if ( options.keys || options.init ) {
 		"pages": [
 			{
 				"pageName": "default",
-				"buttons": new Array(streamDeck.NUM_KEYS).fill(undefined).map((v,i)=>{
+				"buttons": new Array(streamDeck.NUM_KEYS).fill(undefined).map((v, i) => {
 					return {keyIndex: i, text: i.toString()};
 				})
 			}
@@ -59,12 +59,12 @@ if ( options.keys || options.init ) {
 	};
 } 
 
-if ( options.init ) {
-	console.log(JSON.stringify(config,null,2));
+if (options.init) {
+	console.log(JSON.stringify(config, null, 2));
 	process.exit(0);
 }
 
-if ( options.keys ) {
+if (options.keys) {
 	setTimeout(process.exit, 2000);
 }
 
@@ -76,52 +76,52 @@ let ssActive = false;
 streamDeck.clearAllKeys();
 deckMgr.setBrightness(config.brightness || 90);
 
-if ( config.screensaver ) {
+if (config.screensaver) {
 	ssTimer = checkScreensaver();
 }
 
 deckMgr.changePage("default");
 
-streamDeck.on('down', (keyIndex)=>{
-	if ( ignoreInput ) return;
+streamDeck.on('down', (keyIndex) => {
+	if (ignoreInput) return;
 
-	if ( ssActive ) {
+	if (ssActive) {
 		deckMgr.stopScreensaver();
 		ssActive = false;
 	} else {
-		if ( buttons[keyIndex] ) {
+		if (buttons[keyIndex]) {
 			buttons[keyIndex].activate();
 		}
 	}
-	if ( ssTimer ) {
+	if (ssTimer) {
 		clearTimeout(ssTimer);
 	}
 	// ssTimer will be null if it was started previously
-	if ( config.screensaver ){
+	if (config.screensaver) {
 		ssTimer = checkScreensaver();
 	}
 });
 
 // Now that we're listening, allow input.
-setTimeout(()=>ignoreInput = false, 200);
+setTimeout(() => ignoreInput = false, 200);
 
-function checkScreensaver(){
-	return setTimeout(()=>{
+function checkScreensaver() {
+	return setTimeout(() => {
 		ssActive = true;
 		ssTimer = null;
 		deckMgr.startScreensaver();
 	}, config.screensaver.timeoutMinutes * 60 * 1000);
 }
 
-function getDevice(str){
-	let result = devices.find((dev)=>{
+function getDevice(str) {
+	let result = devices.find((dev) => {
 		return dev.serialNumber === str || dev.path === str || dev.model === str;
 	});
-	if ( result ) return result;
+	if (result) return result;
 	return devices[0];
 }
 
-function exitError(err){
+function exitError(err) {
 	console.error(err);
 	process.exit(1);
 }

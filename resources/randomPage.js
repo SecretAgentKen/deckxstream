@@ -9,12 +9,12 @@ program.parse(process.argv);
 
 const options = program.opts();
 
-let result = {buttons:[]};
-for(let i = 0; i < options.keys; i++){
+let result = {buttons: []};
+for (let i = 0; i < options.keys; i++) {
 	result.buttons.push({
 		keyIndex: i,
 		text: i.toString(),
-		dynamic:{
+		dynamic: {
 			command: "resources/randomButton.js -r",
 			persistent: true
 		}
