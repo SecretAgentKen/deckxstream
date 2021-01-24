@@ -1,5 +1,7 @@
 [![npm version](https://img.shields.io/npm/v/deckxstream.svg)](https://npm.im/deckxstream)
-![Node CI](https://github.com/SecretAgentKen/deckxstream/workflows/NodeCI/badge.svg)
+![Linux CI](https://github.com/SecretAgentKen/deckxstream/workflows/Linux/badge.svg)
+![Windows CI](https://github.com/SecretAgentKen/deckxstream/workflows/Windows/badge.svg)
+![MacOS CI](https://github.com/SecretAgentKen/deckxstream/workflows/MacOS/badge.svg)
 
 # deckxstream
 
