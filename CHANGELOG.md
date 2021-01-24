@@ -1,10 +1,14 @@
 # Change Log
 
-## [Unreleased] - 2021-01-23
+## [0.0.4] - 2021-01-23
 
 ### Added
 
-- PATCH Added support for data URIs for screensaver
+- Added support for data URIs for screensaver
+
+### Changed
+
+- Modified the `setKeyboardDelay` for RobotJS to be 20ms instead of 1ms to make hotkeys in RetroArch more consistent.
 
 ## [0.0.3] - 2021-01-22
 
