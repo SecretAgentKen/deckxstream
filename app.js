@@ -22,7 +22,7 @@ program.parse(process.argv);
 
 const options = program.opts();
 
-robot.setKeyboardDelay(1);
+robot.setKeyboardDelay(20);
 
 const devices = listStreamDecks();
 
