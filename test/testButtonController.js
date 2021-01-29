@@ -5,6 +5,7 @@ const chai = require('chai');
 const expect = chai.expect;
 const sinon = require('sinon');
 const sc = require('sinon-chai');
+const sharp = require('sharp');
 chai.use(sc);
 
 const buttonController = rewire('../lib/buttonController');
@@ -198,6 +199,24 @@ describe('Buttons', function() {
 			so.stdout.emit('data', JSON.stringify({icon: PIXEL}));
 			let b3 = bc.pages[0].buffer;
 			expect(b1).to.equal(b3);
+		});
+		it('should not rerender if the text is the same or stopped', async function() {
+			bc = new buttonController({deck, addTextToImage: function() {
+				return sharp({create: {width: 1, height: 1, channels: 3, background: 'black'}});
+			}}, {keyIndex: 0, dynamic: {command: 'none', persistent: true}});
+			bc.init();
+			bc.start();
+			await Promise.delay(0);
+			expect(spawn).to.be.calledOnce;
+			so.stdout.emit('data', JSON.stringify({icon: PIXEL}));
+			await bc.isReady;
+			let b1 = bc.pages[0].buffer;
+			so.stdout.emit('data', JSON.stringify({text: 'test'}));
+			await bc.isReady;
+			let b2 = bc.pages[0].buffer;
+			expect(spawn).to.be.calledOnce;
+			expect(b1).to.not.equal(b2);
+			bc.stop();
 		});
 		it('should survive a bad command', async function() {
 			let errCheck = sinon.stub(console, 'error');

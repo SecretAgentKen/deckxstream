@@ -17,6 +17,8 @@ describe('Deck Manager', function() {
 		buttons = new Array(6).fill(0).map(() => {
 			return {stop: sinon.spy(), start: sinon.spy()};
 		});
+		// Set one to null
+		buttons[2] = null;
 	});
 	afterEach(function() {
 		sinon.restore();
@@ -55,20 +57,27 @@ describe('Deck Manager', function() {
 			return dm.screensaver.isReady.then(() => {
 				dm.startScreensaver();
 				buttons.forEach((b) => {
-					expect(b.stop).to.be.calledOnce;
+					if (b) expect(b.stop).to.be.calledOnce;
 				});
 			});
 		});
 		it('should start all buttons when screensaver stopped', function() {
 			dm.stopScreensaver();
 			buttons.forEach((b) => {
-				expect(b.start).to.be.calledOnce;
+				if (b) expect(b.start).to.be.calledOnce;
 			});
 		});
 		it('should set brightness when screensaver starts', function() {
 			return dm.screensaver.isReady.then(() => {
 				dm.startScreensaver();
 				expect(deck.setBrightness).to.be.calledWith(10);
+			});
+		});
+		it('should not touch brightness if not supplied', function() {
+			delete dm.config.screensaver.brightness;
+			return dm.screensaver.isReady.then(() => {
+				dm.startScreensaver();
+				expect(deck.setBrightness).to.not.be.called;
 			});
 		});
 		it('should restore brightness when screensaver ends', function() {
@@ -121,6 +130,19 @@ describe('Deck Manager', function() {
 			dm.changePage('default');
 			expect(buttons[0]).to.be.null;
 		});
+
+		it('should preserve sticky buttons', function(){
+			dm = new deckManager(deck, buttons, {
+				sticky: [{keyIndex: 0, icon: PIXEL, command: 'none'}],
+				pages: [{
+					pageName: "testPage",
+					buttons: [{keyIndex: 0, icon: PIXEL}],
+				}]
+			});
+			expect(buttons[0].btnCfg.command).to.eql('none');
+			dm.changePage('testPage');
+			expect(buttons[0].btnCfg.command).to.eql('none');
+		});
 	});
 
 	describe('Dynamic page', function() {
@@ -132,10 +154,15 @@ describe('Deck Manager', function() {
 			spawn = sinon.stub().returns(so);
 			revert = deckManager.__set__('spawn', spawn);
 			dm = new deckManager(deck, buttons, {
-				pages: [{
-					pageName: 'testPage',
-					dynamicPage: 'testing'
-				}]
+				sticky: [
+					{keyIndex: 1, icon: PIXEL}
+				],
+				pages: [
+					{
+						pageName: 'testPage',
+						dynamicPage: 'testing'
+					}
+				]
 			});
 		});
 		afterEach(function() {
@@ -150,7 +177,11 @@ describe('Deck Manager', function() {
 		it('should load a page based on command output', function() {
 			dm.changePage('testPage');
 			buttons.forEach((b) => {
-				expect(b).to.be.null;
+				if ( b ) {
+					expect(b.btnCfg.keyIndex).to.eql(1);
+				} else {
+					expect(b).to.be.null;
+				}
 			});
 			so.stdout.emit('data', JSON.stringify({
 				buttons: [
@@ -176,12 +207,20 @@ describe('Deck Manager', function() {
 			let con = sinon.stub(console, 'error');
 			dm.changePage('testPage');
 			buttons.forEach((b) => {
-				expect(b).to.be.null;
+				if ( b ) {
+					expect(b.btnCfg.keyIndex).to.eql(1);
+				} else {
+					expect(b).to.be.null;
+				}
 			});
 			expect(con).to.not.be.called;
 			so.stdout.emit('data', 'garbage');
 			buttons.forEach((b) => {
-				expect(b).to.be.null;
+				if ( b ) {
+					expect(b.btnCfg.keyIndex).to.eql(1);
+				} else {
+					expect(b).to.be.null;
+				}
 			});
 			expect(con).to.be.calledOnce;
 		});
