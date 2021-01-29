@@ -185,7 +185,7 @@ Options:
 
 | Value              | Required | Notes
 |--------------------|----------|-----
-| keyIndex           | Yes      | The key to bind to. For example, the standard Stream Deck would have 0-14. Run `deckxstream` without a configuration file to see the numbering for yours.
+| keyIndex           | Yes      | The key to bind to. For example, the standard Stream Deck would have 0-14. Run `deckxstream -k` to see the numbering for yours.
 | icon               | No       | Either the filename or a Base64 data URI for an image to display in the button. The image will be automatically resized (respecting aspect ratio) to fit.
 | text               | No       | A text label to place at the bottom of the button. If an `icon` is specified, it will be resized to allow the text to fit.
 | textSettings       | No       | Changes the look of the label text. Use an object with properties for [CanvasRenderingContext2D](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D) like `fillStyle` and `font`.
