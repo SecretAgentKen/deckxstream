@@ -200,7 +200,7 @@ A button can cause multiple actions to occur based on the configuration. The ord
 | command            | No       | On click, run the given command using `child_process.spawn`
 | sendkey            | No       | On click, send the given hotkey. Follows the naming of keys from [RobotJS](http://robotjs.io/docs/syntax#keys). To support meta keys, supply them at the start seperated by plus signs. Example: `control+alt+delete`.
 | sendtext           | No       | On click, send the given string to active window. 
-| startScreensaver   | No       | On click, start the screensaver. Value should be `true`.
+| startScreensaver   | No       | On click, start the screensaver. Value should be `true`. (Added in 1.0.0)
 | dynamic            | No       | Dynamically sets up the button. Runs a given command to populate any of the other fields in this structure. See the dynamic structure below. NOTE: **You CANNOT override `keyIndex` or `dynamic` with the results of the command.**
 
 #### Dynamic structure
