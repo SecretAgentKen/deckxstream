@@ -155,6 +155,12 @@ Options:
 }
 ```
 
+### Order of Operations
+
+A button can cause multiple actions to occur based on the configuration. The order of them is as follows on a single press:
+
+    changeBrightness -> sendkey -> sendtext -> command -> changePage
+
 ### Details
 
 <a name="version"></a>`deckxstream-version` - Version number for the JSON file schema. Currently only `1`.
