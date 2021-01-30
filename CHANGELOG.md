@@ -1,5 +1,11 @@
 # Change Log
 
+## [Unreleased]
+
+### Added
+
+- The screensaver can now be immediately triggered with `startScreensaver`
+
 ## [0.0.4] - 2021-01-23
 
 ### Added

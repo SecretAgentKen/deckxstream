@@ -70,48 +70,20 @@ if (options.keys) {
 
 const buttons = new Array(streamDeck.NUM_KEYS);
 const deckMgr = new DeckManager(streamDeck, buttons, config);
-let ssTimer;
-let ssActive = false;
 
 streamDeck.clearAllKeys();
 deckMgr.setBrightness(config.brightness || 90);
-
-if (config.screensaver) {
-	ssTimer = checkScreensaver();
-}
 
 deckMgr.changePage("default");
 
 streamDeck.on('down', (keyIndex) => {
 	if (ignoreInput) return;
 
-	if (ssActive) {
-		deckMgr.stopScreensaver();
-		ssActive = false;
-	} else {
-		if (buttons[keyIndex]) {
-			buttons[keyIndex].activate();
-		}
-	}
-	if (ssTimer) {
-		clearTimeout(ssTimer);
-	}
-	// ssTimer will be null if it was started previously
-	if (config.screensaver) {
-		ssTimer = checkScreensaver();
-	}
+	deckMgr.buttonPressed(keyIndex);
 });
 
 // Now that we're listening, allow input.
 setTimeout(() => ignoreInput = false, 200);
-
-function checkScreensaver() {
-	return setTimeout(() => {
-		ssActive = true;
-		ssTimer = null;
-		deckMgr.startScreensaver();
-	}, config.screensaver.timeoutMinutes * 60 * 1000);
-}
 
 function getDevice(str) {
 	let result = devices.find((dev) => {

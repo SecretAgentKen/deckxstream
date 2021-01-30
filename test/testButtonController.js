@@ -130,6 +130,15 @@ describe('Buttons', function() {
 			bc.activate();
 			expect(dm.buttons[0]).to.be.null;
 		});
+		it('should start the screensaver', async function() {
+			let dm = new deckManager(deck, new Array(6).fill(), {});
+			dm.startScreensaver = sinon.fake();
+			bc = new buttonController(dm, {keyIndex: 0, icon: PIXEL, startScreensaver: true});
+			bc.init();
+			expect(dm.startScreensaver).to.not.be.called;
+			bc.activate();
+			expect(dm.startScreensaver).to.be.calledOnce;
+		});
 	});
 	describe('Dynamic buttons', function() {
 		let spawn, revert, so, bc;
