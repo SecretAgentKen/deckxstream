@@ -1,5 +1,11 @@
 # Change Log
 
+## [1.0.1] - 2021-02-02
+
+### Changed
+
+- Fix bug where `startScreensaver` would still allow the normal screensaver to start and they run in parallel.
+
 ## [1.0.0] - 2021-01-30
 
 ### Added
