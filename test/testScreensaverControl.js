@@ -11,7 +11,7 @@ const PIXEL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcS
 describe('Screen Saver', function() {
 	let deck; //, buttons;
 	beforeEach(function() {
-		deck = {clearAllKeys: sinon.fake(), clearKey: sinon.fake(), ICON_SIZE: 32, KEY_COLUMNS: 2, KEY_ROWS: 2, fillPanel: sinon.fake(), setBrightness: sinon.fake()};
+		deck = {clearPanel: sinon.fake(), clearKey: sinon.fake(), ICON_SIZE: 32, KEY_COLUMNS: 2, KEY_ROWS: 2, fillPanelBuffer: sinon.fake(), setBrightness: sinon.fake()};
 		//buttons = new Array(6).fill(0).map(()=>{return {stop: sinon.spy(), start: sinon.spy()};});
 	});
 	afterEach(function() {
@@ -27,11 +27,11 @@ describe('Screen Saver', function() {
 	it('should support a single frame', function() {
 		let ss = new ssControl({deck}, {animation: PIXEL});
 		ss.init();
-		expect(deck.fillPanel).to.not.be.calledOnce;
+		expect(deck.fillPanelBuffer).to.not.be.calledOnce;
 		return ss.isReady.then(() => {
 			expect(ss.pages).to.have.lengthOf(1);
 			ss.start();
-			expect(deck.fillPanel).to.be.calledOnce;
+			expect(deck.fillPanelBuffer).to.be.calledOnce;
 		});
 	});
     

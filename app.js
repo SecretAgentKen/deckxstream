@@ -3,7 +3,7 @@
 const {program} = require('commander');
 const path = require('path');
 const fs = require('fs');
-const {openStreamDeck, listStreamDecks} = require('elgato-stream-deck');
+const {openStreamDeck, listStreamDecks} = require('@elgato-stream-deck/node');
 const DeckManager = require('./lib/deckManager');
 let config;
 let devInfo;
@@ -68,7 +68,7 @@ if (options.keys) {
 const buttons = new Array(streamDeck.NUM_KEYS);
 const deckMgr = new DeckManager(streamDeck, buttons, config);
 
-streamDeck.clearAllKeys();
+streamDeck.clearPanel();
 deckMgr.setBrightness(config.brightness || 90);
 
 deckMgr.changePage("default");

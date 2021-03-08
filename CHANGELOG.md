@@ -1,10 +1,11 @@
 # Change Log
 
-## [2.0.0] - Unreleased
+## [2.0.0] - 2021-03-07
 
 ### Changed 
 
 - BREAKING: Removed Robot.js due to building issues and having to use a random git commit instead of a proper release. Replaced it with raw `xdo` calls with a new module. This means no more Windows or Mac support. Also hotkeys will need to be modified to be X Keysym strings. For example, `Command` should now be `Super`.
+- Bumped library versions
 
 ## [1.0.1] - 2021-02-02
 

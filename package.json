@@ -25,10 +25,10 @@
   "author": "secretagentken",
   "license": "MIT",
   "dependencies": {
+    "@elgato-stream-deck/node": "^5.0.0",
     "@julusian/jpeg-turbo": "^1.0.1",
     "canvas": "^2.7.0",
     "commander": "^7.1.0",
-    "elgato-stream-deck": "^4.0.1",
     "sharp": "^0.27.0"
   },
   "devDependencies": {

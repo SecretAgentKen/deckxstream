@@ -17,7 +17,7 @@ const PIXEL2 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFc
 describe('Buttons', function() {
 	let deck;
 	beforeEach(function() {
-		deck = {clearAllKeys: sinon.fake(), clearKey: sinon.fake(), ICON_SIZE: 32, KEY_COLUMNS: 2, KEY_ROWS: 2, fillPanel: sinon.fake(), setBrightness: sinon.fake(), fillImage: sinon.fake()};
+		deck = {clearPanel: sinon.fake(), clearKey: sinon.fake(), ICON_SIZE: 32, KEY_COLUMNS: 2, KEY_ROWS: 2, fillPanelBuffer: sinon.fake(), setBrightness: sinon.fake(), fillKeyBuffer: sinon.fake()};
 	});
 	afterEach(function() {
 		sinon.restore();
