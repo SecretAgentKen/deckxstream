@@ -13,8 +13,7 @@
   },
   "scripts": {
     "test": "npx nyc mocha",
-    "lint": "npx eslint --fix *.js .eslintrc.js lib/*.js resources/*.js test/*.js",
-    "install": "node-gyp rebuild"
+    "lint": "npx eslint --fix *.js .eslintrc.js lib/*.js resources/*.js test/*.js"
   },
   "bin": {
     "deckxstream": "app.js"
