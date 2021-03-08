@@ -3,7 +3,6 @@
 const {program} = require('commander');
 const path = require('path');
 const fs = require('fs');
-const robot = require("robotjs");
 const {openStreamDeck, listStreamDecks} = require('elgato-stream-deck');
 const DeckManager = require('./lib/deckManager');
 let config;
@@ -21,8 +20,6 @@ program
 program.parse(process.argv);
 
 const options = program.opts();
-
-robot.setKeyboardDelay(20);
 
 const devices = listStreamDecks();
 

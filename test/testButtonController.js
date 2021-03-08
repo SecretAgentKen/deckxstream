@@ -76,19 +76,19 @@ describe('Buttons', function() {
 		});
 	});
 	describe('Actions', function() {
-		let bc, robot, spawn, revertSpawn, revertRobot;
+		let bc, xdo, spawn, revertSpawn, revertXdo;
 		beforeEach(function() {
-			robot = {
-				keyTap: sinon.fake(),
-				typeString: sinon.fake()
+			xdo = {
+				sendkey: sinon.fake(),
+				sendtext: sinon.fake()
 			};
 			spawn = sinon.stub();
 			revertSpawn = buttonController.__set__('spawn', spawn);
-			revertRobot = buttonController.__set__('robot', robot);
+			revertXdo = buttonController.__set__('xdo', xdo);
 		});
 		afterEach(function() {
 			if (bc) bc.stop();
-			revertRobot();
+			revertXdo();
 			revertSpawn();
 		});
 		it('should change brightness', async function() {
@@ -102,19 +102,19 @@ describe('Buttons', function() {
 			bc = new buttonController({deck}, {keyIndex: 0, icon: PIXEL, sendkey: 'Shift+A'});
 			bc.init();
 			bc.activate();
-			expect(robot.keyTap).to.be.calledWith('A', ['Shift']);
+			expect(xdo.sendkey).to.be.calledWith('Shift+A');
 		});
 		it('should handle + as a key', async function() {
 			bc = new buttonController({deck}, {keyIndex: 0, icon: PIXEL, sendkey: 'Shift++'});
 			bc.init();
 			bc.activate();
-			expect(robot.keyTap).to.be.calledWith('+', ['Shift']);
+			expect(xdo.sendkey).to.be.calledWith('Shift++');
 		});
 		it('should send text', async function() {
 			bc = new buttonController({deck}, {keyIndex: 0, icon: PIXEL, sendtext: 'Hello World'});
 			bc.init();
 			bc.activate();
-			expect(robot.typeString).to.be.calledWith('Hello World');
+			expect(xdo.sendtext).to.be.calledWith('Hello World');
 		});
 		it('should send a command', async function() {
 			bc = new buttonController({deck}, {keyIndex: 0, icon: PIXEL, command: 'test'});

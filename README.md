@@ -1,16 +1,14 @@
 [![npm version](https://img.shields.io/npm/v/deckxstream.svg)](https://npm.im/deckxstream)
 ![Linux CI](https://github.com/SecretAgentKen/deckxstream/workflows/Linux/badge.svg)
-![Windows CI](https://github.com/SecretAgentKen/deckxstream/workflows/Windows/badge.svg)
-![MacOS CI](https://github.com/SecretAgentKen/deckxstream/workflows/MacOS/badge.svg)
 
 # deckxstream
 
-`deckxstream` is a controller application for the [Elgato Stream Deck](https://www.elgato.com/en/gaming/stream-deck). The application was created to allow Linux usage of a Stream Deck but the application should allow for cross-platform usage. The application relies heavily on the [elgato-stream-deck](https://github.com/Julusian/node-elgato-stream-deck) NPM library. **Be sure to follow their udev and native dependency instructions applicable to your platform or else this application will not work!**
+`deckxstream` is a controller application for the [Elgato Stream Deck](https://www.elgato.com/en/gaming/stream-deck). The application was created to allow Linux usage of a Stream Deck. The application relies heavily on the [elgato-stream-deck](https://github.com/Julusian/node-elgato-stream-deck) NPM library. **Be sure to follow their udev and native dependency instructions applicable to your platform or else this application will not work!**
 
 ## Features
 
 * Support for multiple image formats including PNG, SVG, and animated GIF
-* Support for hotkeys and text input (via [RobotJS](https://www.npmjs.com/package/robotjs)), application running (via `child_process.spawn`)
+* Support for hotkeys and text input (via `libxdo` bindings), application running (via `child_process.spawn`)
 * Dynamic buttons where any command/icon/text can be replaced via output from a running application
 * Dynamic pages where the buttons are specified via output of a command
 * Sticky buttons available on any page
@@ -100,7 +98,7 @@ Options:
                 {
                     "keyIndex": 10,
                     "icon": "/some/dir/lockscreen.svg",
-                    "sendkey": "command+l"
+                    "sendkey": "super+l"
                 },
                 {
                     "keyIndex": 13,
@@ -126,23 +124,23 @@ Options:
                 {
                     "keyIndex": 10,
                     "icon": "save.svg",
-                    "sendkey": "f2",
+                    "sendkey": "F2",
                     "text": "Save"
                 },
                 {
                     "keyIndex": 7,
                     "icon": "plus.svg",
-                    "sendkey": "f7"
+                    "sendkey": "F7"
                 },
                 {
                     "keyIndex": 12,
                     "icon": "minus.svg",
-                    "sendkey": "f6"
+                    "sendkey": "F6"
                 },
                 {
                     "keyIndex": 14,
                     "icon": "load.svg",
-                    "sendkey": "f4",
+                    "sendkey": "F4",
                     "text": "Load"
                 }
             ]
@@ -198,7 +196,7 @@ A button can cause multiple actions to occur based on the configuration. The ord
 | changePage        | No       | On click, change the deck to the named page from the array of <a href="#pages">pages</a>.
 | changeBrightness  | No       | On click, change the brightness of the deck. Values of `0-100` supported.
 | command            | No       | On click, run the given command using `child_process.spawn`
-| sendkey            | No       | On click, send the given hotkey. Follows the naming of keys from [RobotJS](http://robotjs.io/docs/syntax#keys). To support meta keys, supply them at the start seperated by plus signs. Example: `control+alt+delete`.
+| sendkey            | No       | On click, send the given hotkey. Follows the naming of keys [xdotool](https://www.freebsd.org/cgi/man.cgi?query=xdotool&apropos=0&sektion=1&manpath=FreeBSD+8.1-RELEASE+and+Ports&format=html#KEYBOARD_COMMANDS).
 | sendtext           | No       | On click, send the given string to active window. 
 | startScreensaver   | No       | On click, start the screensaver. Value should be `true`. (Added in 1.0.0)
 | dynamic            | No       | Dynamically sets up the button. Runs a given command to populate any of the other fields in this structure. See the dynamic structure below. NOTE: **You CANNOT override `keyIndex` or `dynamic` with the results of the command.**
