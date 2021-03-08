@@ -20,7 +20,9 @@
     "deckxstream": "app.js"
   },
   "files": [
-    "/lib"
+    "/lib",
+    "/csrc",
+    "binding.gyp"
   ],
   "gypfile": true,
   "author": "secretagentken",
