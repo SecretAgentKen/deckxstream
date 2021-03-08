@@ -1,6 +1,6 @@
 {
   "name": "deckxstream",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Elgato Stream Deck controller",
   "main": "app.js",
   "homepage": "https://github.com/SecretAgentKen/deckxstream#readme",
@@ -19,24 +19,26 @@
     "deckxstream": "app.js"
   },
   "files": [
-    "/lib"
+    "/lib",
+    "/csrc",
+    "binding.gyp"
   ],
+  "gypfile": true,
   "author": "secretagentken",
   "license": "MIT",
   "dependencies": {
+    "@elgato-stream-deck/node": "^5.0.0",
     "@julusian/jpeg-turbo": "^1.0.1",
-    "canvas": "^2.6.1",
-    "commander": "^7.0.0",
-    "elgato-stream-deck": "^4.0.1",
-    "robotjs": "git+https://github.com/octalmage/robotjs.git#c9cbd98",
+    "canvas": "^2.7.0",
+    "commander": "^7.1.0",
     "sharp": "^0.27.0"
   },
   "devDependencies": {
     "bluebird": "^3.7.2",
-    "chai": "^4.2.0",
-    "eslint": "^7.18.0",
-    "eslint-plugin-mocha": "^8.0.0",
-    "mocha": "^8.2.1",
+    "chai": "^4.3.0",
+    "eslint": "^7.21.0",
+    "eslint-plugin-mocha": "^8.1.0",
+    "mocha": "^8.3.1",
     "nyc": "^15.1.0",
     "rewire": "^5.0.0",
     "sinon": "^9.2.4",

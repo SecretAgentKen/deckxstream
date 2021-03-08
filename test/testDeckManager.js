@@ -14,7 +14,7 @@ const PIXEL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcS
 describe('Deck Manager', function() {
 	let deck, buttons;
 	beforeEach(function() {
-		deck = {clearAllKeys: sinon.fake(), clearKey: sinon.fake(), ICON_SIZE: 32, KEY_COLUMNS: 2, KEY_ROWS: 2, fillPanel: sinon.fake(), setBrightness: sinon.fake()};
+		deck = {clearPanel: sinon.fake(), clearKey: sinon.fake(), ICON_SIZE: 32, KEY_COLUMNS: 2, KEY_ROWS: 2, fillPanelBuffer: sinon.fake(), setBrightness: sinon.fake()};
 		buttons = new Array(6).fill(0).map(() => {
 			return {stop: sinon.spy(), start: sinon.spy(), activate: sinon.spy()};
 		});
