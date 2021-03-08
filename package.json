@@ -1,6 +1,6 @@
 {
   "name": "deckxstream",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Elgato Stream Deck controller",
   "main": "app.js",
   "homepage": "https://github.com/SecretAgentKen/deckxstream#readme",
