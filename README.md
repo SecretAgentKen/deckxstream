@@ -3,7 +3,7 @@
 
 # deckxstream
 
-`deckxstream` is a controller application for the [Elgato Stream Deck](https://www.elgato.com/en/gaming/stream-deck). The application was created to allow Linux usage of a Stream Deck. The application relies heavily on the [elgato-stream-deck](https://github.com/Julusian/node-elgato-stream-deck) NPM library. **Be sure to follow their udev and native dependency instructions applicable to your platform or else this application will not work!**
+`deckxstream` is a controller application for the [Elgato Stream Deck](https://www.elgato.com/en/gaming/stream-deck). The application was created to allow Linux usage of a Stream Deck. The application relies heavily on the [elgato-stream-deck](https://github.com/Julusian/node-elgato-stream-deck) NPM library. **You will need to install udev rules and dependencies for this to install. See below**
 
 ## Features
 
@@ -14,6 +14,17 @@
 * Sticky buttons available on any page
 * Data URI support for icons so they don't even need to be on disk
 * Screensaver for full panel animations
+
+## Preinstall on Linux
+
+Udev on Linux will not allow access to the Stream Deck initially. Create `/etc/udev/rules.d/50-elgato.rules` with the contents below and reload with `sudo udevadm control --reload-rules`. NOTE: This setup assumes you are a member of the `input` group. Use `groups` on the command-line to see which groups you belong to substitute accordingly with `plugdev` or similar. See [elgato-stream-deck](https://www.npmjs.com/package/@elgato-stream-deck/node) for more information.
+
+```
+SUBSYSTEM=="usb", ATTRS{idVendor}=="0fd9", ATTRS{idProduct}=="0060", MODE:="660", GROUP="input"
+SUBSYSTEM=="usb", ATTRS{idVendor}=="0fd9", ATTRS{idProduct}=="0063", MODE:="660", GROUP="input"
+SUBSYSTEM=="usb", ATTRS{idVendor}=="0fd9", ATTRS{idProduct}=="006c", MODE:="660", GROUP="input"
+SUBSYSTEM=="usb", ATTRS{idVendor}=="0fd9", ATTRS{idProduct}=="006d", MODE:="660", GROUP="input"
+```
 
 ## Installation
 
