@@ -71,12 +71,12 @@ NODE_MODULE_INIT(/* exports, module, context */){
     Local<External> external = External::New(isolate, data);
 
     exports->Set(context,
-        String::NewFromUtf8(isolate, "sendtext").ToLocalChecked(),
+        String::NewFromUtf8(isolate, "sendtext", NewStringType::kNormal).ToLocalChecked(),
         FunctionTemplate::New(isolate, SendText, external)->GetFunction(context).ToLocalChecked()
     ).FromJust();
 
     exports->Set(context,
-        String::NewFromUtf8(isolate, "sendkey").ToLocalChecked(),
+        String::NewFromUtf8(isolate, "sendkey", NewStringType::kNormal).ToLocalChecked(),
         FunctionTemplate::New(isolate, SendKey, external)->GetFunction(context).ToLocalChecked()
     ).FromJust();
 }
