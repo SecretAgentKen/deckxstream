@@ -28,12 +28,12 @@ static void SendText(const v8::FunctionCallbackInfo<v8::Value> &info) {
     Isolate *isolate = info.GetIsolate();
 
     if ( info.Length() < 1 ) {
-        isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "Wrong number of arguments").ToLocalChecked()));
+        isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "Wrong number of arguments", NewStringType::kNormal).ToLocalChecked()));
         return;
     }
 
     if ( !info[0]->IsString() ) {
-        isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "Argument is not a string").ToLocalChecked()));
+        isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "Argument is not a string", NewStringType::kNormal).ToLocalChecked()));
         return;
     }
 
@@ -49,12 +49,12 @@ static void SendKey(const v8::FunctionCallbackInfo<v8::Value> &info) {
     Isolate *isolate = info.GetIsolate();
 
     if ( info.Length() < 1 ) {
-        isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "Wrong number of arguments").ToLocalChecked()));
+        isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "Wrong number of arguments", NewStringType::kNormal).ToLocalChecked()));
         return;
     }
 
     if ( !info[0]->IsString() ) {
-        isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "Argument is not a string").ToLocalChecked()));
+        isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "Argument is not a string", NewStringType::kNormal).ToLocalChecked()));
         return;
     }
 

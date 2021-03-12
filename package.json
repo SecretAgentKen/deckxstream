@@ -18,6 +18,9 @@
   "bin": {
     "deckxstream": "app.js"
   },
+  "engines": {
+    "node": ">=12"
+  },
   "files": [
     "/lib",
     "/csrc",
