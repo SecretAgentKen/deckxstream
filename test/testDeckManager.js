@@ -113,9 +113,11 @@ describe('Deck Manager', function() {
 			dm.buttonPressed(0);
 			expect(buttons[0].activate).to.be.calledOnce;
 		});
-		it('should not start the screensaver twice', async function(){
+		it('should not start the screensaver twice', async function() {
 			dm.screensaver = {start: sinon.fake(), stop: sinon.fake()};
-			buttons[0] = {start: sinon.fake(), stop: sinon.fake(), activate: function(){ dm.startScreensaver() }};
+			buttons[0] = {start: sinon.fake(), stop: sinon.fake(), activate: function() {
+				dm.startScreensaver(); 
+			}};
 			dm.buttonPressed(0);
 			await clock.tickAsync(61 * 1000);
 			expect(dm.screensaver.start).to.be.calledOnce;
