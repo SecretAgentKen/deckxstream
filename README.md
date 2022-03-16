@@ -26,6 +26,8 @@ SUBSYSTEM=="usb", ATTRS{idVendor}=="0fd9", ATTRS{idProduct}=="006c", MODE:="660"
 SUBSYSTEM=="usb", ATTRS{idVendor}=="0fd9", ATTRS{idProduct}=="006d", MODE:="660", GROUP="input"
 ```
 
+NOTE: You may need to use `SUBSYSTEMS` or `KERNEL` instead of `SUBSYSTEM` depending on your kernel. If you see permission errors trying to open a device, use `udevadm info -a /dev/<device>` to see what you should be using. 
+
 ## Installation
 
 `$ npm install -g deckxstream`
