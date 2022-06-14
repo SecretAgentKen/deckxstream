@@ -24,9 +24,15 @@ SUBSYSTEM=="usb", ATTRS{idVendor}=="0fd9", ATTRS{idProduct}=="0060", MODE:="660"
 SUBSYSTEM=="usb", ATTRS{idVendor}=="0fd9", ATTRS{idProduct}=="0063", MODE:="660", GROUP="input"
 SUBSYSTEM=="usb", ATTRS{idVendor}=="0fd9", ATTRS{idProduct}=="006c", MODE:="660", GROUP="input"
 SUBSYSTEM=="usb", ATTRS{idVendor}=="0fd9", ATTRS{idProduct}=="006d", MODE:="660", GROUP="input"
+KERNEL=="hidraw*", ATTRS{idVendor}=="0fd9", ATTRS{idProduct}=="0060", MODE:="660", GROUP="input"
+KERNEL=="hidraw*", ATTRS{idVendor}=="0fd9", ATTRS{idProduct}=="0063", MODE:="660", GROUP="input"
+KERNEL=="hidraw*", ATTRS{idVendor}=="0fd9", ATTRS{idProduct}=="006c", MODE:="660", GROUP="input"
+KERNEL=="hidraw*", ATTRS{idVendor}=="0fd9", ATTRS{idProduct}=="006d", MODE:="660", GROUP="input"
 ```
 
 NOTE: You may need to use `SUBSYSTEMS` or `KERNEL` instead of `SUBSYSTEM` depending on your kernel. If you see permission errors trying to open a device, use `udevadm info -a /dev/<device>` to see what you should be using. 
+
+`xdo.h` is also a dependency. You can get this file via `pacman -S xdotool` on Arch or `apt-get install libxdo-dev` on Ubuntu/Debian
 
 ## Installation
 

@@ -1,5 +1,12 @@
 # Change Log
 
+## [2.1.0] - 2022-06-13
+
+### Changed
+
+- BREAKING: Upgraded to `@elgato-stream-deck/node` which requires additional udev rules. See the README
+- Bumped library versions
+
 ## [2.0.0] - 2021-03-07
 
 ### Changed 
