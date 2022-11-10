@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [ 12.x, 14.x, 15.x ]
+        node-version: [ 14, 16, 18 ]
         os: [ubuntu-latest]
 
     steps:
@@ -27,7 +27,7 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y yasm libudev-dev libusb-1.0-0-dev libxtst-dev libpng++-dev libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev libxdo-dev
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm install
