@@ -30,11 +30,11 @@
   "author": "secretagentken",
   "license": "MIT",
   "dependencies": {
-    "@elgato-stream-deck/node": "^5.4.0",
-    "@julusian/jpeg-turbo": "^1.1.2",
-    "canvas": "^2.9.1",
-    "commander": "^9.3.0",
-    "sharp": "^0.30.6"
+    "@elgato-stream-deck/node": "^5.6.0",
+    "@julusian/jpeg-turbo": "^2.0.0",
+    "canvas": "^2.10.2",
+    "commander": "^9.4.1",
+    "sharp": "^0.31.2"
   },
   "devDependencies": {
     "bluebird": "^3.7.2",
