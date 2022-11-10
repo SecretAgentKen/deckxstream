@@ -1,9 +1,10 @@
 # Change Log
 
-## [2.1.1] - 2022-11-09
+## [2.2.0] - 2022-11-09
 
 ### Changed
 
+- BREAKING: Node 14 now the minimum version
 - Bumped library versions
 
 ## [2.1.0] - 2022-06-13
