@@ -1,5 +1,11 @@
 # Change Log
 
+## [2.2.2] - 2023-11-24
+
+### Changed
+
+- Updated `sharp` to 0.32.6 due to vulnerability
+
 ## [2.2.1] - 2022-11-09
 
 ### Changed

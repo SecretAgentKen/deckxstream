@@ -1,6 +1,6 @@
 {
   "name": "deckxstream",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "Elgato Stream Deck controller",
   "main": "app.js",
   "homepage": "https://github.com/SecretAgentKen/deckxstream#readme",
@@ -35,7 +35,7 @@
     "bluebird": "^3.7.2",
     "canvas": "^2.10.2",
     "commander": "^9.4.1",
-    "sharp": "^0.31.2"
+    "sharp": "^0.32.6"
   },
   "devDependencies": {
     "chai": "^4.3.6",
