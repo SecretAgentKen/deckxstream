@@ -1,5 +1,11 @@
 # Change Log
 
+## [3.0.0] - 2026-02-15
+
+### Changed
+
+- BREAKING: New version of configuration necessary
+
 ## [2.2.2] - 2023-11-24
 
 ### Changed

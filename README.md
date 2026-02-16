@@ -1,8 +1,6 @@
 [![npm version](https://img.shields.io/npm/v/deckxstream.svg)](https://npm.im/deckxstream)
 ![Linux CI](https://github.com/SecretAgentKen/deckxstream/workflows/Linux/badge.svg)
 
-IMPORTANT: This codebase is no longer actively maintained. The package will continue working, but support and changes are no longer provided. I will continue to make security updates so long as I have a device to use.
-
 # deckxstream
 
 `deckxstream` is a controller application for the [Elgato Stream Deck](https://www.elgato.com/en/gaming/stream-deck). The application was created to allow Linux usage of a Stream Deck. The application relies heavily on the [elgato-stream-deck](https://github.com/Julusian/node-elgato-stream-deck) NPM library. **You will need to install udev rules and dependencies for this to install. See below**
@@ -10,31 +8,11 @@ IMPORTANT: This codebase is no longer actively maintained. The package will cont
 ## Features
 
 * Support for multiple image formats including PNG, SVG, and animated GIF
-* Support for hotkeys and text input (via `libxdo` bindings), application running (via `child_process.spawn`)
 * Dynamic buttons where any command/icon/text can be replaced via output from a running application
 * Dynamic pages where the buttons are specified via output of a command
 * Sticky buttons available on any page
 * Data URI support for icons so they don't even need to be on disk
 * Screensaver for full panel animations
-
-## Preinstall on Linux
-
-Udev on Linux will not allow access to the Stream Deck initially. Create `/etc/udev/rules.d/50-elgato.rules` with the contents below and reload with `sudo udevadm control --reload-rules`. NOTE: This setup assumes you are a member of the `input` group. Use `groups` on the command-line to see which groups you belong to substitute accordingly with `plugdev` or similar. See [elgato-stream-deck](https://www.npmjs.com/package/@elgato-stream-deck/node) for more information.
-
-```
-SUBSYSTEM=="usb", ATTRS{idVendor}=="0fd9", ATTRS{idProduct}=="0060", MODE:="660", GROUP="input"
-SUBSYSTEM=="usb", ATTRS{idVendor}=="0fd9", ATTRS{idProduct}=="0063", MODE:="660", GROUP="input"
-SUBSYSTEM=="usb", ATTRS{idVendor}=="0fd9", ATTRS{idProduct}=="006c", MODE:="660", GROUP="input"
-SUBSYSTEM=="usb", ATTRS{idVendor}=="0fd9", ATTRS{idProduct}=="006d", MODE:="660", GROUP="input"
-KERNEL=="hidraw*", ATTRS{idVendor}=="0fd9", ATTRS{idProduct}=="0060", MODE:="660", GROUP="input"
-KERNEL=="hidraw*", ATTRS{idVendor}=="0fd9", ATTRS{idProduct}=="0063", MODE:="660", GROUP="input"
-KERNEL=="hidraw*", ATTRS{idVendor}=="0fd9", ATTRS{idProduct}=="006c", MODE:="660", GROUP="input"
-KERNEL=="hidraw*", ATTRS{idVendor}=="0fd9", ATTRS{idProduct}=="006d", MODE:="660", GROUP="input"
-```
-
-NOTE: You may need to use `SUBSYSTEMS` or `KERNEL` instead of `SUBSYSTEM` depending on your kernel. If you see permission errors trying to open a device, use `udevadm info -a /dev/<device>` to see what you should be using. 
-
-`xdo.h` is also a dependency. You can get this file via `pacman -S xdotool` on Arch or `apt-get install libxdo-dev` on Ubuntu/Debian
 
 ## Installation
 
@@ -115,11 +93,6 @@ Options:
                 {
                     "keyIndex": 6,
                     "icon": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2NQu1DzHwAFBAJyENnpTwAAAABJRU5ErkJggg=="
-                }
-                {
-                    "keyIndex": 10,
-                    "icon": "/some/dir/lockscreen.svg",
-                    "sendkey": "super+l"
                 },
                 {
                     "keyIndex": 13,
@@ -136,37 +109,6 @@ Options:
             ]
         },
         {
-            "pageName": "retroarch",
-            "buttons": [
-                {
-                    "keyIndex": 1,
-                    "icon": "/some/dir/retroarch.svg",
-                },
-                {
-                    "keyIndex": 10,
-                    "icon": "save.svg",
-                    "sendkey": "F2",
-                    "text": "Save"
-                },
-                {
-                    "keyIndex": 7,
-                    "icon": "plus.svg",
-                    "sendkey": "F7"
-                },
-                {
-                    "keyIndex": 12,
-                    "icon": "minus.svg",
-                    "sendkey": "F6"
-                },
-                {
-                    "keyIndex": 14,
-                    "icon": "load.svg",
-                    "sendkey": "F4",
-                    "text": "Load"
-                }
-            ]
-        },
-        {
             "pageName": "dyn",
             "dynamicPage": "resources/randomPage.js -k 15"
         }
@@ -178,7 +120,7 @@ Options:
 
 A button can cause multiple actions to occur based on the configuration. The order of them is as follows on a single press:
 
-    changeBrightness -> sendkey -> sendtext -> command -> changePage -> startScreensaver
+    changeBrightness -> command -> changePage -> startScreensaver
 
 ### Details
 
@@ -217,8 +159,6 @@ A button can cause multiple actions to occur based on the configuration. The ord
 | changePage        | No       | On click, change the deck to the named page from the array of <a href="#pages">pages</a>.
 | changeBrightness  | No       | On click, change the brightness of the deck. Values of `0-100` supported.
 | command            | No       | On click, run the given command using `child_process.spawn`
-| sendkey            | No       | On click, send the given hotkey. Follows the naming of keys [xdotool](https://www.freebsd.org/cgi/man.cgi?query=xdotool&apropos=0&sektion=1&manpath=FreeBSD+8.1-RELEASE+and+Ports&format=html#KEYBOARD_COMMANDS).
-| sendtext           | No       | On click, send the given string to active window. 
 | startScreensaver   | No       | On click, start the screensaver. Value should be `true`. (Added in 1.0.0)
 | dynamic            | No       | Dynamically sets up the button. Runs a given command to populate any of the other fields in this structure. See the dynamic structure below. NOTE: **You CANNOT override `keyIndex` or `dynamic` with the results of the command.**
 
