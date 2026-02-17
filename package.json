@@ -13,6 +13,7 @@
   },
   "scripts": {
     "test": "npx nyc mocha",
+    "build": " esbuild src/app.ts --bundle --platform=node --outdir=dist --packages=external",
     "lint": "npx eslint --fix *.js .eslintrc.js lib/*.js resources/*.js test/*.js"
   },
   "bin": {
@@ -22,7 +23,7 @@
     "node": ">=24"
   },
   "files": [
-    "/lib"
+    "/dist"
   ],
   "author": "secretagentken",
   "license": "MIT",
@@ -32,17 +33,24 @@
     "bluebird": "^3.7.2",
     "canvas": "^3.2.1",
     "commander": "^14.0.3",
-    "sharp": "^0.34.5"
+    "sharp": "^0.34.5",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@tsconfig/node24": "^24.0.4",
+    "@types/bluebird": "^3.5.42",
+    "@types/node": "^24.10.13",
     "chai": "^4.3.6",
-    "eslint": "^8.17.0",
-    "eslint-plugin-mocha": "^10.0.5",
+    "esbuild": "^0.27.3",
+    "eslint": "^10.0.0",
     "mocha": "^10.0.0",
     "nyc": "^15.1.0",
     "rewire": "^6.0.0",
     "sinon": "^14.0.0",
-    "sinon-chai": "^3.7.0"
+    "sinon-chai": "^3.7.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.56.0"
   },
   "keywords": [
     "elgato",

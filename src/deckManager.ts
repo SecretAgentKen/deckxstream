@@ -1,10 +1,35 @@
-const { createCanvas } = require('canvas');
-const ButtonController = require('./buttonController.js');
-const ScreensaverController = require('./screensaverControl.js');
-const { spawn } = require('child_process');
+import { Canvas, CanvasRenderingContext2D, createCanvas } from 'canvas';
+import ButtonController from './buttonController';
+import ScreensaverController from './screensaverControl';
+import { spawn } from 'node:child_process';
+import { StreamDeck, StreamDeckButtonControlDefinitionLcdFeedback } from '@elgato-stream-deck/node';
+import { DeckXstreamConfig, DynamicButtonResponse } from './types';
+import { Sharp } from 'sharp';
 
-module.exports = class DeckManager {
-	constructor(deck, buttons, config) {
+type DeckPage = ButtonController[] & {dynamicPage?: string}
+
+export default class DeckManager {
+	public readonly ICON_SIZE: number;
+	public readonly KEY_COLUMNS: number;
+	public readonly KEY_ROWS: number;
+	public readonly deck: StreamDeck;
+
+	private config: DeckXstreamConfig;
+	private buttons: (ButtonController | undefined)[];
+	private storedBrightness: number;
+	private ssTimer?: ReturnType<typeof setTimeout>;
+	private ssActive: boolean;
+	private ctx: CanvasRenderingContext2D;
+	private canvas: Canvas;
+	private smallerSize: number;
+	private extend: number;
+	private extendSide: number;
+	private extendFix: number;
+	private screensaver?: ScreensaverController;
+	private pages: Record<string, DeckPage>;
+	
+
+	constructor(deck: StreamDeck, buttons: (ButtonController | undefined)[], config: DeckXstreamConfig) {
 		if (!deck) throw new TypeError('Invalid deck reference. Use a reference from elgato-stream-deck openStreamDeck');
 		if (!buttons || !buttons.length) throw new TypeError('Invalid buttons reference. Must be a sized array');
 		if (!config) throw new TypeError('Configuration not supplied');
@@ -13,10 +38,12 @@ module.exports = class DeckManager {
 		this.config = config;
 		this.buttons = buttons;
 		this.storedBrightness = 90;
-		this.ssTimer = null;
+		this.ssTimer = undefined;
 		this.ssActive = false;
 
-		this.ICON_SIZE = deck.device.deviceProperties.CONTROLS.filter((ctl) => ctl.type === 'button')[0].pixelSize.width
+		this.ICON_SIZE = (deck.CONTROLS.filter((ctl) => ctl.type === 'button')[0] as StreamDeckButtonControlDefinitionLcdFeedback).pixelSize.width;
+		this.KEY_COLUMNS = deck.CONTROLS.filter((ctl) => ctl.type === 'button').reduce((acc, btn) => Math.max(acc, btn.column), 0) + 1;
+		this.KEY_ROWS = deck.CONTROLS.filter((ctl) => ctl.type === 'button').reduce((acc, btn) => Math.max(acc, btn.row), 0) + 1;
 
 		const canvas = createCanvas(this.ICON_SIZE, this.ICON_SIZE / 5);
 		const ctx = canvas.getContext('2d');
@@ -40,9 +67,9 @@ module.exports = class DeckManager {
 		if (config.sticky) {
 			config.sticky.forEach((btnConfig) => {
 				buttons[btnConfig.keyIndex] = new ButtonController(this, Object.assign({}, btnConfig, { isSticky: true }));
-				buttons[btnConfig.keyIndex].init();
-				buttons[btnConfig.keyIndex].isReady.then(() => {
-					buttons[btnConfig.keyIndex].start();
+				buttons[btnConfig.keyIndex]!.init();
+				buttons[btnConfig.keyIndex]!.isReady.then(() => {
+					buttons[btnConfig.keyIndex]?.start();
 				});
 			});
 		}
@@ -51,8 +78,9 @@ module.exports = class DeckManager {
 		if (config.pages) {
 			config.pages.forEach((page) => {
 				this.pages[page.pageName] = Array.from({ length: buttons.length });
-				this.pages[page.pageName].dynamicPage = page.dynamicPage;
-				if (!page.dynamicPage) {
+				if ('dynamicPage' in page)
+					this.pages[page.pageName].dynamicPage = page.dynamicPage;
+				else {
 					page.buttons.forEach((btnConfig) => {
 						this.pages[page.pageName][btnConfig.keyIndex] = new ButtonController(this, Object.assign({}, btnConfig));
 						this.pages[page.pageName][btnConfig.keyIndex].init();
@@ -67,16 +95,16 @@ module.exports = class DeckManager {
 			this.ssActive = true;
 			if (this.ssTimer) {
 				clearTimeout(this.ssTimer);
-				this.ssTimer = null;
+				this.ssTimer = undefined;
 			}
 			this.buttons.forEach((btn) => {
 				if (btn) btn.stop();
 			});
 			this.deck.clearPanel();
-			if (this.config.screensaver.brightness) {
+			if (this.config.screensaver?.brightness) {
 				this.deck.setBrightness(this.config.screensaver.brightness);
 			}
-			this.screensaver.start();
+			this.screensaver?.start();
 		}
 	}
 
@@ -85,9 +113,9 @@ module.exports = class DeckManager {
 		// Force clear the timer. It will be restarted by the button press.
 		if (this.ssTimer) {
 			clearTimeout(this.ssTimer);
-			this.ssTimer = null;
+			this.ssTimer = undefined;
 		}
-		this.screensaver.stop();
+		this.screensaver?.stop();
 		this.deck.clearPanel();
 		this.deck.setBrightness(this.storedBrightness);
 		this.buttons.forEach((btn) => {
@@ -97,12 +125,12 @@ module.exports = class DeckManager {
 
 	checkScreensaver() {
 		return setTimeout(() => {
-			this.ssTimer = null;
+			this.ssTimer = undefined;
 			this.startScreensaver();
-		}, this.config.screensaver.timeoutMinutes * 60 * 1000);
+		}, (this.config.screensaver?.timeoutMinutes || 1) * 60 * 1000);
 	}
 
-	buttonPressed(keyIndex) {
+	buttonPressed(keyIndex: number) {
 		if (this.ssActive) {
 			this.stopScreensaver();
 		} else {
@@ -119,27 +147,27 @@ module.exports = class DeckManager {
 		}
 	}
 
-	changePage(pageName) {
+	changePage(pageName: string) {
 		this.buttons.forEach((btn, i) => {
 			if (btn && !btn.isSticky) {
 				btn.stop();
 				this.deck.clearKey(i);
-				this.buttons[i] = null;
+				this.buttons[i] = undefined;
 			}
 		});
 		if (this.pages[pageName]) {
 			// Is dynamic?
 			if (this.pages[pageName].dynamicPage) {
-				let dynamicProc = spawn(this.pages[pageName].dynamicPage, { shell: true });
+				const dynamicProc = spawn(this.pages[pageName].dynamicPage, { shell: true });
 				dynamicProc.stdout.on('data', (data) => {
 					try {
-						let incoming = JSON.parse(data.toString());
+						const incoming = DynamicButtonResponse.parse(JSON.parse(data.toString()));
 						incoming.buttons.forEach((btnCfg) => {
 							if (!this.buttons[btnCfg.keyIndex]) {
 								// Don't override sticky
 								this.buttons[btnCfg.keyIndex] = new ButtonController(this, Object.assign({}, btnCfg));
-								this.buttons[btnCfg.keyIndex].init().then(() => {
-									this.buttons[btnCfg.keyIndex].start();
+								this.buttons[btnCfg.keyIndex]!.init().then(() => {
+									this.buttons[btnCfg.keyIndex]?.start();
 								});
 							}
 						});
@@ -162,16 +190,16 @@ module.exports = class DeckManager {
 		}
 	}
 
-	setBrightness(val) {
+	setBrightness(val:number) {
 		this.storedBrightness = val;
 		this.deck.setBrightness(val);
 	}
 
-	addTextToImage(sharpInstance, text, textSettings) {
+	addTextToImage(sharpInstance: Sharp, text: string, textSettings?: Record<string, unknown>) {
 		this.ctx.clearRect(0, 0, this.ICON_SIZE, this.ICON_SIZE / 5);
 
 		// Set context
-		let previousSettings = this.updateCtx(this.ctx, textSettings);
+		const previousSettings = this.updateCtx(this.ctx, textSettings);
 		this.ctx.fillText(text, this.ICON_SIZE / 2, 12, this.ICON_SIZE);
 		this.updateCtx(this.ctx, previousSettings);
 
@@ -191,12 +219,12 @@ module.exports = class DeckManager {
 			]);
 	}
 
-	updateCtx(ctx, settings) {
-		if (!settings) return null;
-		let result = {};
-		Object.keys(settings).forEach((key) => {
-			result[key] = ctx[key];
-			ctx[key] = settings[key];
+	updateCtx(ctx: CanvasRenderingContext2D, settings?: Record<string, unknown>) {
+		if (!settings) return undefined;
+		const result: Record<string, unknown> = {};
+		Object.keys(settings).forEach((key: string) => {
+			result[key] = (ctx as unknown as Record<string, unknown>)[key];
+			(ctx as unknown as Record<string, unknown>)[key] = settings[key];
 		});
 		return result;
 	}

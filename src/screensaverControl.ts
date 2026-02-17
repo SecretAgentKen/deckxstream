@@ -1,8 +1,18 @@
-const sharp = require("sharp");
-const Promise = require('bluebird');
+import sharp from "sharp";
+import Bluebird from 'bluebird';
+import DeckManager from "./deckManager";
+import { GifPage, ScreensaverConfig } from "./types";
 
-module.exports = class ScreensaverController {
-	constructor(deckMgr, ssCfg) {
+
+
+export default class ScreensaverController {
+	private deckMgr: DeckManager;
+	private ssCfg: ScreensaverConfig;
+	private pages: GifPage[];
+	private isReady?: Promise<GifPage[]>;
+	private timeout?: ReturnType<typeof setTimeout>;
+
+	constructor(deckMgr: DeckManager, ssCfg: ScreensaverConfig) {
 		this.deckMgr = deckMgr;
 		this.ssCfg = ssCfg;
 
@@ -11,18 +21,18 @@ module.exports = class ScreensaverController {
 
 	init() {
 		// Set the icons
-		let anim = this.ssCfg.animation;
+		let anim: string | Buffer = this.ssCfg.animation;
 		if (anim.startsWith('data:image')) {
 			// It's a URI. Translate to buffer.
-			anim = Buffer.from(anim.substr(anim.indexOf(',') + 1), 'base64');
+			anim = Buffer.from(anim.substring(0, anim.indexOf(',') + 1), 'base64');
 		}
 		this.isReady = sharp(anim).metadata().then((metadata) => {
 			let delays = metadata.delay;
 			if (!delays) delays = [0];
-			return Promise.each(delays, (delay, i) => {
+			return Bluebird.each(delays, (delay, i) => {
 				return sharp(anim, { page: i })
 					.flatten()
-					.resize(this.deckMgr.ICON_SIZE * this.deckMgr.deck.KEY_COLUMNS, this.deckMgr.ICON_SIZE * this.deckMgr.deck.KEY_ROWS)
+					.resize(this.deckMgr.ICON_SIZE * this.deckMgr.KEY_COLUMNS, this.deckMgr.ICON_SIZE * this.deckMgr.KEY_ROWS)
 					.removeAlpha()
 					.raw()
 					.toBuffer()
@@ -40,7 +50,7 @@ module.exports = class ScreensaverController {
 		return this.isReady;
 	}
 
-	processGif(gifPages, i) {
+	processGif(gifPages: GifPage[], i: number) {
 		this.deckMgr.deck.fillPanelBuffer(gifPages[i].buffer);
 		this.timeout = setTimeout(() => {
 			i = (i + 1) % gifPages.length;
@@ -59,7 +69,7 @@ module.exports = class ScreensaverController {
 	stop() {
 		if (this.timeout) {
 			clearTimeout(this.timeout);
-			this.timeout = null;
+			this.timeout = undefined;
 		}
 	}
 };

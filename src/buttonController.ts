@@ -1,9 +1,22 @@
-const sharp = require("sharp");
-const Promise = require('bluebird');
-const { spawn } = require('child_process');
+import sharp  from "sharp";
+import Bluebird  from 'bluebird';
+import { spawn }  from 'child_process';
+import DeckManager from "./deckManager";
+import {  GifPage, InternalButtonConfig, OverrideButtonConfig } from "./types";
 
-module.exports = class ButtonController {
-	constructor(deckMgr, btnCfg) {
+export default class ButtonController {
+	public isReady!: Promise<unknown>;
+
+	private readonly deckMgr: DeckManager;
+	private btnCfg: InternalButtonConfig;
+	private pages: GifPage[];
+	private stopped: boolean;
+	private originalCfg?: InternalButtonConfig;
+	private timeout?: ReturnType<typeof setTimeout>;
+	private dynamicTimer?: ReturnType<typeof setTimeout>;
+	private dynamicProc?: ReturnType<typeof spawn>;
+
+	constructor(deckMgr: DeckManager, btnCfg: InternalButtonConfig) {
 		this.deckMgr = deckMgr;
 		this.btnCfg = btnCfg;
 
@@ -31,9 +44,9 @@ module.exports = class ButtonController {
 		// Set the icons/text
 		this.pages = [];
 		if (!this.btnCfg.icon) {
-			this.isReady = sharp({ create: { width: this.deckMgr.ICON_SIZE, height: this.deckMgr.ICON_SIZE, channels: 3, background: 'black' } });
-			this.isReady = this.deckMgr.addTextToImage(this.isReady, this.btnCfg.text, this.btnCfg.textSettings);
-			this.isReady = this.isReady.removeAlpha()
+			let tSharp = sharp({ create: { width: this.deckMgr.ICON_SIZE, height: this.deckMgr.ICON_SIZE, channels: 3, background: 'black' } });
+			tSharp = this.deckMgr.addTextToImage(tSharp, this.btnCfg.text || "", this.btnCfg.textSettings);
+			this.isReady = tSharp.removeAlpha()
 				.raw()
 				.toBuffer()
 				.then((buffer) => {
@@ -41,15 +54,15 @@ module.exports = class ButtonController {
 					return this.pages;
 				});
 		} else {
-			let icon = this.btnCfg.icon;
+			let icon: Buffer | string = this.btnCfg.icon;
 			if (icon.startsWith('data:image')) {
 				// It's a URI. Translate to buffer.
-				icon = Buffer.from(icon.substr(icon.indexOf(',') + 1), 'base64');
+				icon = Buffer.from(icon.substring(0, icon.indexOf(',') + 1), 'base64');
 			}
 			this.isReady = sharp(icon).metadata().then((metadata) => {
 				let delays = metadata.delay;
 				if (!delays) delays = [0];
-				return Promise.each(delays, (delay, i) => {
+				return Bluebird.each(delays, (delay, i) => {
 					let prom = sharp(icon, { page: i }).flatten();
 					if (this.btnCfg.text) {
 						prom = this.deckMgr.addTextToImage(prom, this.btnCfg.text, this.btnCfg.textSettings);
@@ -78,7 +91,7 @@ module.exports = class ButtonController {
 		return this.btnCfg.isSticky;
 	}
 
-	processGif(btnIdx, gifPages, i) {
+	processGif(btnIdx: number, gifPages: GifPage[], i: number) {
 		this.deckMgr.deck.fillKeyBuffer(btnIdx, gifPages[i].buffer);
 		this.timeout = setTimeout(() => {
 			i = (i + 1) % gifPages.length;
@@ -102,17 +115,17 @@ module.exports = class ButtonController {
 		this.stopped = true;
 		if (this.timeout) {
 			clearTimeout(this.timeout);
-			this.timeout = null;
+			this.timeout = undefined;
 		}
 		if (this.btnCfg.dynamic) {
 			if (this.btnCfg.dynamic.persistent) {
 				if (this.dynamicProc) {
 					this.dynamicProc.kill();
-					this.dynamicProc = null;
+					this.dynamicProc = undefined;
 				}
 			} else {
 				clearTimeout(this.dynamicTimer);
-				this.dynamicTimer = null;
+				this.dynamicTimer = undefined;
 			}
 		}
 	}
@@ -126,13 +139,12 @@ module.exports = class ButtonController {
 	}
 
 	runDynamicCommand() {
-		this.dynamicProc = spawn(this.btnCfg.dynamic.command, { shell: true });
-		this.dynamicProc.stdout.on('data', (data) => {
+		this.dynamicProc = spawn(this.btnCfg.dynamic!.command, { shell: true });
+		this.dynamicProc.stdout!.on('data', (data) => {
 			try {
-				let incoming = JSON.parse(data.toString());
+				const incoming = OverrideButtonConfig.parse(JSON.parse(data.toString()));
 				// If we have new text or a new image, we need to reinit. Also if it's first time.
-				let regen = (incoming.text && incoming.text !== this.btnCfg.text) || (incoming.icon && incoming.icon !== this.btnCfg.icon);
-				// FIXME -- Validate input
+				const regen = (incoming.text && incoming.text !== this.btnCfg.text) || (incoming.icon && incoming.icon !== this.btnCfg.icon);
 				this.btnCfg = Object.assign({}, this.originalCfg, incoming);
 				if (!this.stopped) {
 					if (regen || this.pages.length === 0) {
@@ -143,10 +155,10 @@ module.exports = class ButtonController {
 					});
 
 					// If we're on timer, we need to cycle. Otherwise we wait for more info.
-					if (!this.btnCfg.dynamic.persistent) {
+					if (!this.btnCfg.dynamic?.persistent) {
 						this.dynamicTimer = setTimeout(() => {
 							this.runDynamicCommand();
-						}, this.btnCfg.dynamic.interval);
+						}, this.btnCfg.dynamic!.interval);
 					}
 				}
 			} catch (err) {
@@ -156,16 +168,16 @@ module.exports = class ButtonController {
 	}
 
 	activate() {
-		if (Object.prototype.hasOwnProperty.call(this.btnCfg, 'changeBrightness')) {
-			this.deckMgr.setBrightness(this.btnCfg.changeBrightness);
+		if ('changeBrightness' in this.btnCfg) {
+			this.deckMgr.setBrightness(this.btnCfg.changeBrightness!);
 		}
-		if (Object.prototype.hasOwnProperty.call(this.btnCfg, 'command')) {
-			spawn(this.btnCfg.command, { shell: true });
+		if ('command' in this.btnCfg) {
+			spawn(this.btnCfg.command!, { shell: true });
 		}
-		if (Object.prototype.hasOwnProperty.call(this.btnCfg, 'changePage')) {
-			this.deckMgr.changePage(this.btnCfg.changePage);
+		if ('changePage' in this.btnCfg) {
+			this.deckMgr.changePage(this.btnCfg.changePage!);
 		}
-		if (Object.prototype.hasOwnProperty.call(this.btnCfg, 'startScreensaver')) {
+		if ('startScreensaver' in this.btnCfg) {
 			this.deckMgr.startScreensaver();
 		}
 	}

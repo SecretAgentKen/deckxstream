@@ -124,7 +124,7 @@ A button can cause multiple actions to occur based on the configuration. The ord
 
 ### Details
 
-<a name="version"></a>`deckxstream-version` - Version number for the JSON file schema. Currently only `1`.
+<a name="version"></a>`deckxstream-version` - Version number for the JSON file schema. Version `2` is the supported version for `deckxstream@3` and above. Version `1` is for older `deckxstream@2` and below.
 
 <a name="brightness"></a>`brightness` - Brightness to set to at start of application. Supports `0-100`. (Default: `90`)
 
