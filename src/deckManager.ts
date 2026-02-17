@@ -6,8 +6,9 @@ import {
   StreamDeck,
   StreamDeckButtonControlDefinitionLcdFeedback,
 } from '@elgato-stream-deck/node'
-import { DeckXstreamConfig, DynamicButtonResponse } from './types'
+import { DeckXstreamConfig, DynamicButtonResponse, ObsConfigEntry } from './types'
 import { Sharp } from 'sharp'
+import { OBSWebSocket } from 'obs-websocket-js'
 
 type DeckPage = ButtonController[] & { dynamicPage?: string }
 
@@ -30,6 +31,7 @@ export default class DeckManager {
   private extendFix: number
   private screensaver?: ScreensaverController
   private pages: Record<string, DeckPage>
+  private obsEntries: ObsConfigEntry[]
 
   constructor(
     deck: StreamDeck,
@@ -50,6 +52,14 @@ export default class DeckManager {
     this.storedBrightness = 90
     this.ssTimer = undefined
     this.ssActive = false
+
+    this.obsEntries = this.config.obsConfig?.map(entry => {
+      return {...entry, socket: new OBSWebSocket()}
+    }) || [{name: 'default', url: 'ws://127.0.0.1:4455', socket: new OBSWebSocket()}]
+
+    this.obsEntries.forEach((entry)=>{
+      entry.socket.connect(entry.url)
+    })
 
     this.ICON_SIZE = (
       deck.CONTROLS.filter(
@@ -267,5 +277,10 @@ export default class DeckManager {
       ;(ctx as unknown as Record<string, unknown>)[key] = settings[key]
     })
     return result
+  }
+
+  getObsSocket(name?: string) {
+    if ( name ) return this.obsEntries.find((entry) => entry.name === name)?.socket
+    return this.obsEntries[0].socket
   }
 }

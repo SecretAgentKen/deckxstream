@@ -3,6 +3,7 @@ import Bluebird from 'bluebird'
 import { spawn } from 'child_process'
 import DeckManager from './deckManager'
 import { GifPage, InternalButtonConfig, OverrideButtonConfig } from './types'
+import { OBSRequestTypes } from 'obs-websocket-js'
 
 export default class ButtonController {
   public isReady!: Promise<unknown>
@@ -192,9 +193,14 @@ export default class ButtonController {
     })
   }
 
-  activate() {
+  async activate() {
     if ('changeBrightness' in this.btnCfg) {
       this.deckMgr.setBrightness(this.btnCfg.changeBrightness!)
+    }
+    if ('obsCommands' in this.btnCfg) {
+      await Bluebird.each(this.btnCfg.obsCommands!, (cmd)=>
+        this.deckMgr.getObsSocket(cmd.name)?.call(cmd.command as keyof OBSRequestTypes, cmd.data)
+      )
     }
     if ('command' in this.btnCfg) {
       spawn(this.btnCfg.command!, { shell: true })

@@ -1,9 +1,12 @@
+import OBSWebSocket from 'obs-websocket-js'
 import * as z from 'zod'
 
 const ObsConfig = z.strictObject({
   name: z.string().min(1),
   url: z.string().min(1),
 })
+
+export type ObsConfigEntry = z.infer<typeof ObsConfig> & {socket: OBSWebSocket}
 
 const ObsCommand = z.strictObject({
   name: z.string().min(1).optional(),
