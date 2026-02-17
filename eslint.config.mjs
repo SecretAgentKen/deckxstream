@@ -1,16 +1,23 @@
-import eslint from '@eslint/js';
-import { defineConfig } from 'eslint/config';
-import tseslint from 'typescript-eslint';
+import eslint from '@eslint/js'
+import { defineConfig } from 'eslint/config'
+import tseslint from 'typescript-eslint'
 
 export default defineConfig(
-    {
-        ignores: ['dist', '.nyc_output', 'node_modules', 'resources', 'test', 'test_resources']
+  {
+    ignores: [
+      'dist',
+      '.nyc_output',
+      'node_modules',
+      'resources',
+      'test',
+      'test_resources',
+    ],
+  },
+  eslint.configs.recommended,
+  tseslint.configs.recommended,
+  {
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'error',
     },
-    eslint.configs.recommended,
-    tseslint.configs.recommended,
-    {
-        rules: {
-            "@typescript-eslint/no-explicit-any": "error"
-        }
-    }
-);
+  },
+)
