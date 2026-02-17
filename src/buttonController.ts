@@ -70,7 +70,7 @@ export default class ButtonController {
       let icon: Buffer | string = this.btnCfg.icon
       if (icon.startsWith('data:image')) {
         // It's a URI. Translate to buffer.
-        icon = Buffer.from(icon.substring(0, icon.indexOf(',') + 1), 'base64')
+        icon = Buffer.from(icon.substring(icon.indexOf(',') + 1), 'base64')
       }
       this.isReady = sharp(icon)
         .metadata()

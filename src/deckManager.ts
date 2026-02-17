@@ -57,8 +57,12 @@ export default class DeckManager {
       return {...entry, socket: new OBSWebSocket()}
     }) || [{name: 'default', url: 'ws://127.0.0.1:4455', socket: new OBSWebSocket()}]
 
-    this.obsEntries.forEach((entry)=>{
-      entry.socket.connect(entry.url)
+    this.obsEntries.forEach(async (entry)=>{
+      try {
+        await entry.socket.connect(entry.url)
+      } catch (err) {
+        console.error(err)
+      }
     })
 
     this.ICON_SIZE = (

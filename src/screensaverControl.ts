@@ -22,7 +22,7 @@ export default class ScreensaverController {
     let anim: string | Buffer = this.ssCfg.animation
     if (anim.startsWith('data:image')) {
       // It's a URI. Translate to buffer.
-      anim = Buffer.from(anim.substring(0, anim.indexOf(',') + 1), 'base64')
+      anim = Buffer.from(anim.substring(anim.indexOf(',') + 1), 'base64')
     }
     this.isReady = sharp(anim)
       .metadata()
