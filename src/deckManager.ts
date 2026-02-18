@@ -2,10 +2,7 @@ import { Canvas, CanvasRenderingContext2D, createCanvas } from 'canvas'
 import ButtonController from './buttonController'
 import ScreensaverController from './screensaverControl'
 import { spawn } from 'node:child_process'
-import {
-  StreamDeck,
-  StreamDeckButtonControlDefinitionLcdFeedback,
-} from '@elgato-stream-deck/node'
+import { StreamDeck, StreamDeckButtonControlDefinitionLcdFeedback } from '@elgato-stream-deck/node'
 import { DeckXstreamConfig, DynamicButtonResponse, ObsConfigEntry } from './types'
 import { Sharp } from 'sharp'
 import { OBSWebSocket } from 'obs-websocket-js'
@@ -15,7 +12,9 @@ type DeckPage = ButtonController[] & { dynamicPage?: string }
 export default class DeckManager {
   public readonly ICON_SIZE: number
   public readonly KEY_COLUMNS: number
+  public readonly KEY_SPACING_COLUMNS: number
   public readonly KEY_ROWS: number
+  public readonly KEY_SPACING_ROWS: number
   public readonly deck: StreamDeck
 
   private config: DeckXstreamConfig
@@ -33,17 +32,10 @@ export default class DeckManager {
   private pages: Record<string, DeckPage>
   private obsEntries: ObsConfigEntry[]
 
-  constructor(
-    deck: StreamDeck,
-    buttons: (ButtonController | undefined)[],
-    config: DeckXstreamConfig,
-  ) {
+  constructor(deck: StreamDeck, buttons: (ButtonController | undefined)[], config: DeckXstreamConfig) {
     if (!deck)
-      throw new TypeError(
-        'Invalid deck reference. Use a reference from elgato-stream-deck openStreamDeck',
-      )
-    if (!buttons || !buttons.length)
-      throw new TypeError('Invalid buttons reference. Must be a sized array')
+      throw new TypeError('Invalid deck reference. Use a reference from elgato-stream-deck openStreamDeck')
+    if (!buttons || !buttons.length) throw new TypeError('Invalid buttons reference. Must be a sized array')
     if (!config) throw new TypeError('Configuration not supplied')
 
     this.deck = deck
@@ -53,11 +45,17 @@ export default class DeckManager {
     this.ssTimer = undefined
     this.ssActive = false
 
-    this.obsEntries = this.config.obsConfig?.map(entry => {
-      return {...entry, socket: new OBSWebSocket()}
-    }) || [{name: 'default', url: 'ws://127.0.0.1:4455', socket: new OBSWebSocket()}]
+    this.obsEntries = this.config.obsConfig?.map((entry) => {
+      return { ...entry, socket: new OBSWebSocket() }
+    }) || [
+      {
+        name: 'default',
+        url: 'ws://127.0.0.1:4455',
+        socket: new OBSWebSocket(),
+      },
+    ]
 
-    this.obsEntries.forEach(async (entry)=>{
+    this.obsEntries.forEach(async (entry) => {
       try {
         await entry.socket.connect(entry.url)
       } catch (err) {
@@ -66,9 +64,7 @@ export default class DeckManager {
     })
 
     this.ICON_SIZE = (
-      deck.CONTROLS.filter(
-        (ctl) => ctl.type === 'button',
-      )[0] as StreamDeckButtonControlDefinitionLcdFeedback
+      deck.CONTROLS.filter((ctl) => ctl.type === 'button')[0] as StreamDeckButtonControlDefinitionLcdFeedback
     ).pixelSize.width
     this.KEY_COLUMNS =
       deck.CONTROLS.filter((ctl) => ctl.type === 'button').reduce(
@@ -76,10 +72,10 @@ export default class DeckManager {
         0,
       ) + 1
     this.KEY_ROWS =
-      deck.CONTROLS.filter((ctl) => ctl.type === 'button').reduce(
-        (acc, btn) => Math.max(acc, btn.row),
-        0,
-      ) + 1
+      deck.CONTROLS.filter((ctl) => ctl.type === 'button').reduce((acc, btn) => Math.max(acc, btn.row), 0) + 1
+    // FIXME - Hard-coded until fixed in node-elgato-stream-deck
+    this.KEY_SPACING_COLUMNS = 25
+    this.KEY_SPACING_ROWS = 25
 
     const canvas = createCanvas(this.ICON_SIZE, this.ICON_SIZE / 5)
     const ctx = canvas.getContext('2d')
@@ -117,12 +113,13 @@ export default class DeckManager {
     if (config.pages) {
       config.pages.forEach((page) => {
         this.pages[page.pageName] = Array.from({ length: buttons.length })
-        if ('dynamicPage' in page)
-          this.pages[page.pageName].dynamicPage = page.dynamicPage
+        if ('dynamicPage' in page) this.pages[page.pageName].dynamicPage = page.dynamicPage
         else {
           page.buttons.forEach((btnConfig) => {
-            this.pages[page.pageName][btnConfig.keyIndex] =
-              new ButtonController(this, Object.assign({}, btnConfig))
+            this.pages[page.pageName][btnConfig.keyIndex] = new ButtonController(
+              this,
+              Object.assign({}, btnConfig),
+            )
             this.pages[page.pageName][btnConfig.keyIndex].init()
           })
         }
@@ -206,16 +203,11 @@ export default class DeckManager {
         })
         dynamicProc.stdout.on('data', (data) => {
           try {
-            const incoming = DynamicButtonResponse.parse(
-              JSON.parse(data.toString()),
-            )
+            const incoming = DynamicButtonResponse.parse(JSON.parse(data.toString()))
             incoming.buttons.forEach((btnCfg) => {
               if (!this.buttons[btnCfg.keyIndex]) {
                 // Don't override sticky
-                this.buttons[btnCfg.keyIndex] = new ButtonController(
-                  this,
-                  Object.assign({}, btnCfg),
-                )
+                this.buttons[btnCfg.keyIndex] = new ButtonController(this, Object.assign({}, btnCfg))
                 this.buttons[btnCfg.keyIndex]!.init().then(() => {
                   this.buttons[btnCfg.keyIndex]?.start()
                 })
@@ -245,11 +237,7 @@ export default class DeckManager {
     this.deck.setBrightness(val)
   }
 
-  addTextToImage(
-    sharpInstance: Sharp,
-    text: string,
-    textSettings?: Record<string, unknown>,
-  ) {
+  addTextToImage(sharpInstance: Sharp, text: string, textSettings?: Record<string, unknown>) {
     this.ctx.clearRect(0, 0, this.ICON_SIZE, this.ICON_SIZE / 5)
 
     // Set context
@@ -284,7 +272,7 @@ export default class DeckManager {
   }
 
   getObsSocket(name?: string) {
-    if ( name ) return this.obsEntries.find((entry) => entry.name === name)?.socket
+    if (name) return this.obsEntries.find((entry) => entry.name === name)?.socket
     return this.obsEntries[0].socket
   }
 }

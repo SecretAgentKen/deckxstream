@@ -53,11 +53,7 @@ export default class ButtonController {
           background: 'black',
         },
       })
-      tSharp = this.deckMgr.addTextToImage(
-        tSharp,
-        this.btnCfg.text || '',
-        this.btnCfg.textSettings,
-      )
+      tSharp = this.deckMgr.addTextToImage(tSharp, this.btnCfg.text || '', this.btnCfg.textSettings)
       this.isReady = tSharp
         .removeAlpha()
         .raw()
@@ -80,11 +76,7 @@ export default class ButtonController {
           return Bluebird.each(delays, (delay, i) => {
             let prom = sharp(icon, { page: i }).flatten()
             if (this.btnCfg.text) {
-              prom = this.deckMgr.addTextToImage(
-                prom,
-                this.btnCfg.text,
-                this.btnCfg.textSettings,
-              )
+              prom = this.deckMgr.addTextToImage(prom, this.btnCfg.text, this.btnCfg.textSettings)
             } else {
               prom = prom.resize(this.deckMgr.ICON_SIZE, this.deckMgr.ICON_SIZE)
             }
@@ -153,10 +145,7 @@ export default class ButtonController {
 
   render() {
     if (this.pages.length === 1) {
-      this.deckMgr.deck.fillKeyBuffer(
-        this.btnCfg.keyIndex,
-        this.pages[0].buffer,
-      )
+      this.deckMgr.deck.fillKeyBuffer(this.btnCfg.keyIndex, this.pages[0].buffer)
     } else {
       this.processGif(this.btnCfg.keyIndex, this.pages, 0)
     }
@@ -198,8 +187,8 @@ export default class ButtonController {
       this.deckMgr.setBrightness(this.btnCfg.changeBrightness!)
     }
     if ('obsCommands' in this.btnCfg) {
-      await Bluebird.each(this.btnCfg.obsCommands!, (cmd)=>
-        this.deckMgr.getObsSocket(cmd.name)?.call(cmd.command as keyof OBSRequestTypes, cmd.data)
+      await Bluebird.each(this.btnCfg.obsCommands!, (cmd) =>
+        this.deckMgr.getObsSocket(cmd.name)?.call(cmd.command as keyof OBSRequestTypes, cmd.data),
       )
     }
     if ('command' in this.btnCfg) {

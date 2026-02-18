@@ -6,7 +6,7 @@ const ObsConfig = z.strictObject({
   url: z.string().min(1),
 })
 
-export type ObsConfigEntry = z.infer<typeof ObsConfig> & {socket: OBSWebSocket}
+export type ObsConfigEntry = z.infer<typeof ObsConfig> & { socket: OBSWebSocket }
 
 const ObsCommand = z.strictObject({
   name: z.string().min(1).optional(),

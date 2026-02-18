@@ -7,11 +7,7 @@ import * as z from 'zod'
 
 import { version } from '../package.json'
 
-import {
-  openStreamDeck,
-  listStreamDecks,
-  StreamDeckDeviceInfo,
-} from '@elgato-stream-deck/node'
+import { openStreamDeck, listStreamDecks, StreamDeckDeviceInfo } from '@elgato-stream-deck/node'
 import { DeckXstreamConfig } from './types'
 import DeckManager from './deckManager'
 import ButtonController from './buttonController'
@@ -34,10 +30,7 @@ async function start() {
       path.join(process.env['HOME']!, '.deckxstream.json'),
     )
     .option('-l, --list', 'Show all detected Stream Decks and exit')
-    .option(
-      '-i, --init [device]',
-      'Output an initial JSON file for the specified device if supplied',
-    )
+    .option('-i, --init [device]', 'Output an initial JSON file for the specified device if supplied')
     .option(
       '-k, --keys [device]',
       'Outputs the keyIndex values to each button on the specified Stream Deck (or first found) and exits',
@@ -50,9 +43,7 @@ async function start() {
   const devices = await listStreamDecks()
 
   if (devices.length === 0)
-    exitError(
-      'No Steam Decks found! Have you followed the instructions for elgato-stream-deck?',
-    )
+    exitError('No Steam Decks found! Have you followed the instructions for elgato-stream-deck?')
 
   if (options.list) {
     console.log(devices)
@@ -62,8 +53,7 @@ async function start() {
   if (options.init || options.keys) {
     devInfo = getDevice(devices, options.init || options.keys)
   } else if (options.config) {
-    if (!fs.existsSync(options.config))
-      exitError(`Specified config ${options.config} does not exist!`)
+    if (!fs.existsSync(options.config)) exitError(`Specified config ${options.config} does not exist!`)
     const result = DeckXstreamConfig.safeParse(
       (await import(options.config, { with: { type: 'json' } })).default,
     )
@@ -108,11 +98,7 @@ async function start() {
     setTimeout(process.exit, 2000)
   }
 
-  const deckMgr = new DeckManager(
-    streamDeck,
-    buttons as ButtonController[],
-    config!,
-  )
+  const deckMgr = new DeckManager(streamDeck, buttons as ButtonController[], config!)
 
   streamDeck.clearPanel()
   deckMgr.setBrightness(config!.brightness || 90)
@@ -129,10 +115,7 @@ async function start() {
   setTimeout(() => (ignoreInput = false), 200)
 }
 
-function getDevice(
-  devices: StreamDeckDeviceInfo[],
-  serialPathOrModel?: string,
-) {
+function getDevice(devices: StreamDeckDeviceInfo[], serialPathOrModel?: string) {
   const result = devices.find((dev) => {
     return (
       serialPathOrModel &&
