@@ -24,7 +24,6 @@ export default class ScreensaverController {
   }
 
   init() {
-    console.log(this.deckMgr.deck)
     // Set the icons
     let anim: string | Buffer = this.ssCfg.animation
     if (anim.startsWith('data:image')) {
