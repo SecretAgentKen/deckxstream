@@ -28,6 +28,9 @@ describe('Buttons', function () {
       fillPanelBuffer: sinon.fake(),
       setBrightness: sinon.fake(),
       fillKeyBuffer: sinon.fake(),
+      CONTROLS: [
+        { type: 'button', pixelSize: { width: 32, height: 32 }, column: 0, row: 0 },
+      ],
     }
   })
   afterEach(function () {

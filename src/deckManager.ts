@@ -4,7 +4,7 @@ import ScreensaverController from './screensaverControl'
 import { spawn } from 'node:child_process'
 import { StreamDeck, StreamDeckButtonControlDefinitionLcdFeedback } from '@elgato-stream-deck/node'
 import { DeckXstreamConfig, DynamicButtonResponse, ObsConfigEntry } from './types'
-import { Sharp } from 'sharp'
+import sharp, { Sharp } from 'sharp'
 import { OBSWebSocket } from 'obs-websocket-js'
 
 type DeckPage = ButtonController[] & { dynamicPage?: string }
@@ -235,6 +235,24 @@ export default class DeckManager {
   setBrightness(val: number) {
     this.storedBrightness = val
     this.deck.setBrightness(val)
+  }
+
+  createTextImage(text: string, textSettings?: Record<string, unknown>) {
+    const textCanvas = createCanvas(this.ICON_SIZE, this.ICON_SIZE)
+    const textCtx = textCanvas.getContext('2d')
+
+    textCtx.fillStyle = 'black'
+    textCtx.fillRect(0, 0, this.ICON_SIZE, this.ICON_SIZE)
+    textCtx.font = 'bold 14px sans-serif'
+    textCtx.textAlign = 'center'
+    textCtx.textBaseline = 'middle'
+    textCtx.fillStyle = 'white'
+
+    const previousSettings = this.updateCtx(textCtx, textSettings)
+    textCtx.fillText(text, this.ICON_SIZE / 2, this.ICON_SIZE / 2, this.ICON_SIZE)
+    this.updateCtx(textCtx, previousSettings)
+
+    return sharp(textCanvas.toBuffer('image/png'))
   }
 
   addTextToImage(sharpInstance: Sharp, text: string, textSettings?: Record<string, unknown>) {

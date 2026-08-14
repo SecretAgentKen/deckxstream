@@ -45,16 +45,8 @@ export default class ButtonController {
     // Set the icons/text
     this.pages = []
     if (!this.btnCfg.icon) {
-      let tSharp = sharp({
-        create: {
-          width: this.deckMgr.ICON_SIZE,
-          height: this.deckMgr.ICON_SIZE,
-          channels: 3,
-          background: 'black',
-        },
-      })
-      tSharp = this.deckMgr.addTextToImage(tSharp, this.btnCfg.text || '', this.btnCfg.textSettings)
-      this.isReady = tSharp
+      this.isReady = this.deckMgr
+        .createTextImage(this.btnCfg.text || '', this.btnCfg.textSettings)
         .removeAlpha()
         .raw()
         .toBuffer()
