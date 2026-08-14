@@ -3,3 +3,5 @@ package-lock.json
 *.tgz
 .nyc_output
 build/
+dist/
+test-build/

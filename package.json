@@ -1,8 +1,8 @@
 {
   "name": "deckxstream",
-  "version": "2.2.2",
+  "version": "3.0.0",
   "description": "Elgato Stream Deck controller",
-  "main": "app.js",
+  "main": "dist/app.js",
   "homepage": "https://github.com/SecretAgentKen/deckxstream#readme",
   "repository": {
     "type": "git",
@@ -12,40 +12,48 @@
     "url": "https://github.com/SecretAgentKen/deckxstream/issues"
   },
   "scripts": {
-    "test": "npx nyc mocha",
-    "lint": "npx eslint --fix *.js .eslintrc.js lib/*.js resources/*.js test/*.js"
+    "build": "esbuild src/app.ts --bundle --platform=node --outdir=dist --packages=external",
+    "build:test": "tsc -p tsconfig.test.json",
+    "test": "npm run build:test && npx nyc mocha",
+    "lint": "eslint && prettier . --check",
+    "lint:fix": "eslint --fix && prettier . --write"
   },
   "bin": {
-    "deckxstream": "app.js"
+    "deckxstream": "dist/app.js"
   },
   "engines": {
-    "node": ">=14"
+    "node": ">=24"
   },
   "files": [
-    "/lib",
-    "/csrc",
-    "binding.gyp"
+    "/dist"
   ],
-  "gypfile": true,
   "author": "secretagentken",
   "license": "MIT",
   "dependencies": {
-    "@elgato-stream-deck/node": "^5.6.0",
-    "@julusian/jpeg-turbo": "^2.0.0",
+    "@elgato-stream-deck/node": "^7.5.2",
+    "@julusian/jpeg-turbo": "^3.0.1",
     "bluebird": "^3.7.2",
-    "canvas": "^2.10.2",
-    "commander": "^9.4.1",
-    "sharp": "^0.32.6"
+    "canvas": "^3.2.1",
+    "commander": "^15.0.0",
+    "obs-websocket-js": "^5.0.7",
+    "sharp": "^0.35.3",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
-    "chai": "^4.3.6",
-    "eslint": "^8.17.0",
-    "eslint-plugin-mocha": "^10.0.5",
-    "mocha": "^10.0.0",
-    "nyc": "^15.1.0",
-    "rewire": "^6.0.0",
-    "sinon": "^14.0.0",
-    "sinon-chai": "^3.7.0"
+    "@eslint/js": "^10.0.1",
+    "@tsconfig/node24": "^24.0.4",
+    "@types/bluebird": "^3.5.42",
+    "@types/node": "^24.10.13",
+    "chai": "^6.2.2",
+    "esbuild": "^0.28.2",
+    "eslint": "^10.0.0",
+    "mocha": "^11.8.0",
+    "nyc": "^18.0.0",
+    "prettier": "^3.8.1",
+    "sinon": "^22.1.0",
+    "sinon-chai": "^4.0.1",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.56.0"
   },
   "keywords": [
     "elgato",
@@ -55,5 +63,12 @@
     "animated",
     "screensaver",
     "hotkey"
-  ]
+  ],
+  "allowScripts": {
+    "@julusian/jpeg-turbo@3.0.1": true,
+    "canvas@3.2.3": true,
+    "esbuild@0.28.2": true,
+    "node-hid@3.4.0": true,
+    "sharp@0.34.5": true
+  }
 }
