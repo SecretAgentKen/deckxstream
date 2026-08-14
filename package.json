@@ -6,7 +6,7 @@
   "homepage": "https://github.com/SecretAgentKen/deckxstream#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/SecretAgentKen/deckxstream"
+    "url": "git+https://github.com/SecretAgentKen/deckxstream.git"
   },
   "bugs": {
     "url": "https://github.com/SecretAgentKen/deckxstream/issues"
