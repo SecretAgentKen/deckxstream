@@ -13,6 +13,7 @@
 - Sticky buttons available on any page
 - Data URI support for icons so they don't even need to be on disk
 - Screensaver for full panel animations
+- OBS Studio integration via WebSocket
 
 ## Installation
 
@@ -42,7 +43,7 @@ Options:
 
 ```json
 {
-  "deckxstream-version": 1,
+  "deckxstreamConfigVersion": 2,
   "brightness": 70,
   "device": "somename",
   "screensaver": {
@@ -121,15 +122,41 @@ Options:
 
 A button can cause multiple actions to occur based on the configuration. The order of them is as follows on a single press:
 
-    changeBrightness -> command -> changePage -> startScreensaver
+    changeBrightness -> obsCommands -> command -> changePage -> startScreensaver
 
 ### Details
 
-<a name="version"></a>`deckxstream-version` - Version number for the JSON file schema. Version `2` is the supported version for `deckxstream@3` and above. Version `1` is for older `deckxstream@2` and below.
+<a name="version"></a>`deckxstreamConfigVersion` - Version number for the JSON file schema. Version `2` is the supported version for `deckxstream@3` and above. Version `1` (under the old `deckxstream-version` key) is for older `deckxstream@2` and below.
 
 <a name="brightness"></a>`brightness` - Brightness to set to at start of application. Supports `0-100`. (Default: `90`)
 
 <a name="device"></a>`device` - The device serial number to use if multiple Stream Decks are in use. (Default: first found)
+
+<a name="obsConfig"></a>`obsConfig` - Configuration block for OBS Studio WebSocket connections (Optional)
+
+| Value | Required | Notes                                                              |
+| ----- | -------- | ------------------------------------------------------------------ |
+| name  | Yes      | A name to reference this connection from a button's `obsCommands`. |
+| url   | Yes      | The WebSocket URL of the OBS instance, e.g. `ws://127.0.0.1:4455`. |
+
+If `obsConfig` is omitted, a default connection named `default` pointing at `ws://127.0.0.1:4455` is used.
+
+Example button that switches OBS scenes:
+
+```json
+{
+  "keyIndex": 7,
+  "icon": "/some/dir/camera.svg",
+  "text": "Camera",
+  "obsCommands": [
+    {
+      "name": "default",
+      "command": "SetCurrentProgramScene",
+      "data": { "sceneName": "Camera" }
+    }
+  ]
+}
+```
 
 <a name="screensaver"></a>`screensaver` - Configuration block for the screensaver (Optional)
 
@@ -151,17 +178,18 @@ A button can cause multiple actions to occur based on the configuration. The ord
 
 #### <a name="button"></a> Button Format
 
-| Value            | Required | Notes                                                                                                                                                                                                                               |
-| ---------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| keyIndex         | Yes      | The key to bind to. For example, the standard Stream Deck would have 0-14. Run `deckxstream -k` to see the numbering for yours.                                                                                                     |
-| icon             | No       | Either the filename or a Base64 data URI for an image to display in the button. The image will be automatically resized (respecting aspect ratio) to fit.                                                                           |
-| text             | No       | A text label to place at the bottom of the button. If an `icon` is specified, it will be resized to allow the text to fit.                                                                                                          |
-| textSettings     | No       | Changes the look of the label text. Use an object with properties for [CanvasRenderingContext2D](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D) like `fillStyle` and `font`.                            |
-| changePage       | No       | On click, change the deck to the named page from the array of <a href="#pages">pages</a>.                                                                                                                                           |
-| changeBrightness | No       | On click, change the brightness of the deck. Values of `0-100` supported.                                                                                                                                                           |
-| command          | No       | On click, run the given command using `child_process.spawn`                                                                                                                                                                         |
-| startScreensaver | No       | On click, start the screensaver. Value should be `true`. (Added in 1.0.0)                                                                                                                                                           |
-| dynamic          | No       | Dynamically sets up the button. Runs a given command to populate any of the other fields in this structure. See the dynamic structure below. NOTE: **You CANNOT override `keyIndex` or `dynamic` with the results of the command.** |
+| Value            | Required | Notes                                                                                                                                                                                                                                     |
+| ---------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| keyIndex         | Yes      | The key to bind to. For example, the standard Stream Deck would have 0-14. Run `deckxstream -k` to see the numbering for yours.                                                                                                           |
+| icon             | No       | Either the filename or a Base64 data URI for an image to display in the button. The image will be automatically resized (respecting aspect ratio) to fit.                                                                                 |
+| text             | No       | A text label to place at the bottom of the button. If an `icon` is specified, it will be resized to allow the text to fit.                                                                                                                |
+| textSettings     | No       | Changes the look of the label text. Use an object with properties for [CanvasRenderingContext2D](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D) like `fillStyle` and `font`.                                  |
+| changePage       | No       | On click, change the deck to the named page from the array of <a href="#pages">pages</a>.                                                                                                                                                 |
+| changeBrightness | No       | On click, change the brightness of the deck. Values of `0-100` supported.                                                                                                                                                                 |
+| command          | No       | On click, run the given command using `child_process.spawn`                                                                                                                                                                               |
+| obsCommands      | No       | On click, send a request to an OBS WebSocket connection. An array of objects, each with `name` (optional, defaults to `default`), `command` (the OBS request type, e.g. `SetCurrentProgramScene`), and `data` (optional request payload). |
+| startScreensaver | No       | On click, start the screensaver. Value should be `true`. (Added in 1.0.0)                                                                                                                                                                 |
+| dynamic          | No       | Dynamically sets up the button. Runs a given command to populate any of the other fields in this structure. See the dynamic structure below. NOTE: **You CANNOT override `keyIndex` or `dynamic` with the results of the command.**       |
 
 #### Dynamic structure
 

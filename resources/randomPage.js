@@ -2,10 +2,7 @@
 
 const { program } = require('commander')
 
-program.requiredOption(
-  '-k, --keys <keys>',
-  'Number of keys to generate buttons for',
-)
+program.requiredOption('-k, --keys <keys>', 'Number of keys to generate buttons for')
 
 program.parse(process.argv)
 

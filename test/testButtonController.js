@@ -28,9 +28,7 @@ describe('Buttons', function () {
       fillPanelBuffer: sinon.fake(),
       setBrightness: sinon.fake(),
       fillKeyBuffer: sinon.fake(),
-      CONTROLS: [
-        { type: 'button', pixelSize: { width: 32, height: 32 }, column: 0, row: 0 },
-      ],
+      CONTROLS: [{ type: 'button', pixelSize: { width: 32, height: 32 }, column: 0, row: 0 }],
     }
   })
   afterEach(function () {
@@ -122,10 +120,7 @@ describe('Buttons', function () {
       expect(deck.setBrightness).to.be.calledWith(20)
     })
     it('should send a command', async function () {
-      bc = new buttonController(
-        { deck },
-        { keyIndex: 0, icon: PIXEL, command: 'test' },
-      )
+      bc = new buttonController({ deck }, { keyIndex: 0, icon: PIXEL, command: 'test' })
       bc.init()
       bc.activate()
       expect(spawn).to.be.calledWith('test')
@@ -172,10 +167,7 @@ describe('Buttons', function () {
     })
 
     it('call the dynamic command on startup', async function () {
-      bc = new buttonController(
-        { deck },
-        { keyIndex: 0, dynamic: { command: 'none', interval: 50 } },
-      )
+      bc = new buttonController({ deck }, { keyIndex: 0, dynamic: { command: 'none', interval: 50 } })
       bc.init()
       expect(spawn).to.not.be.called
       bc.start()
@@ -183,10 +175,7 @@ describe('Buttons', function () {
       expect(spawn).to.be.calledOnce
     })
     it('should work on an interval', async function () {
-      bc = new buttonController(
-        { deck },
-        { keyIndex: 0, dynamic: { command: 'none', interval: 50 } },
-      )
+      bc = new buttonController({ deck }, { keyIndex: 0, dynamic: { command: 'none', interval: 50 } })
       bc.init()
       bc.start()
       await Promise.delay(0)
@@ -196,10 +185,7 @@ describe('Buttons', function () {
       expect(spawn).to.be.calledTwice
     })
     it('should work peristently', async function () {
-      bc = new buttonController(
-        { deck },
-        { keyIndex: 0, dynamic: { command: 'none', persistent: true } },
-      )
+      bc = new buttonController({ deck }, { keyIndex: 0, dynamic: { command: 'none', persistent: true } })
       bc.init()
       bc.start()
       await Promise.delay(0)
@@ -216,10 +202,7 @@ describe('Buttons', function () {
       expect(so.kill).to.be.calledOnce
     })
     it('should not rerender if the icon is the same or stopped', async function () {
-      bc = new buttonController(
-        { deck },
-        { keyIndex: 0, dynamic: { command: 'none', persistent: true } },
-      )
+      bc = new buttonController({ deck }, { keyIndex: 0, dynamic: { command: 'none', persistent: true } })
       bc.init()
       bc.start()
       await Promise.delay(0)
@@ -265,10 +248,7 @@ describe('Buttons', function () {
     })
     it('should survive a bad command', async function () {
       let errCheck = sinon.stub(console, 'error')
-      bc = new buttonController(
-        { deck },
-        { keyIndex: 0, dynamic: { command: 'none', interval: 50 } },
-      )
+      bc = new buttonController({ deck }, { keyIndex: 0, dynamic: { command: 'none', interval: 50 } })
       bc.init()
       expect(spawn).to.not.be.called
       bc.start()

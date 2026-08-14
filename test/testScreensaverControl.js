@@ -50,10 +50,7 @@ describe('Screen Saver', function () {
       ss = new ssControl(
         { deck },
         {
-          animation: require('path').join(
-            __dirname,
-            '../test_resources/blink.gif',
-          ),
+          animation: require('path').join(__dirname, '../test_resources/blink.gif'),
         },
       )
       ss.init()

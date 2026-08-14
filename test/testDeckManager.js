@@ -71,10 +71,7 @@ describe('Deck Manager', function () {
       clock = sinon.useFakeTimers()
       dm = new deckManager(deck, buttons, {
         screensaver: {
-          animation: require('path').join(
-            __dirname,
-            '../test_resources/blink.gif',
-          ),
+          animation: require('path').join(__dirname, '../test_resources/blink.gif'),
           brightness: 10,
           timeoutMinutes: 1,
         },
