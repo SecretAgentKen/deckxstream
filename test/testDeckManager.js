@@ -1,13 +1,21 @@
-const rewire = require('rewire')
 const events = require('events')
 const chai = require('chai')
 const expect = chai.expect
 const sinon = require('sinon')
 const sc = require('sinon-chai')
+const cp = require('node:child_process')
 chai.use(sc)
 
-// Use require because rewire breaks sinon timers if first
-const deckManager = require('../lib/deckManager')
+const obs = require('obs-websocket-js')
+class FakeOBS {
+  connect() {
+    return Promise.resolve()
+  }
+}
+obs.OBSWebSocket = FakeOBS
+
+// Use require because sinon stubs break sinon timers if first
+const deckManager = require('../test-build/deckManager').default
 
 const PIXEL =
   'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2NYlV/1HwAF7QKTgvPu3QAAAABJRU5ErkJggg=='
@@ -18,11 +26,15 @@ describe('Deck Manager', function () {
     deck = {
       clearPanel: sinon.fake(),
       clearKey: sinon.fake(),
-      ICON_SIZE: 32,
-      KEY_COLUMNS: 2,
-      KEY_ROWS: 2,
       fillPanelBuffer: sinon.fake(),
+      fillKeyBuffer: sinon.fake(),
       setBrightness: sinon.fake(),
+      CONTROLS: [
+        { type: 'button', pixelSize: { width: 32, height: 32 }, column: 0, row: 0 },
+        { type: 'button', pixelSize: { width: 32, height: 32 }, column: 1, row: 0 },
+        { type: 'button', pixelSize: { width: 32, height: 32 }, column: 0, row: 1 },
+        { type: 'button', pixelSize: { width: 32, height: 32 }, column: 1, row: 1 },
+      ],
     }
     buttons = new Array(6).fill(0).map(() => {
       return { stop: sinon.spy(), start: sinon.spy(), activate: sinon.spy() }
@@ -190,7 +202,7 @@ describe('Deck Manager', function () {
       dm.changePage('testPage')
       expect(buttons[0].render).to.not.be.undefined
       dm.changePage('default')
-      expect(buttons[0]).to.be.null
+      expect(buttons[0]).to.be.undefined
     })
 
     it('should preserve sticky buttons', function () {
@@ -210,17 +222,12 @@ describe('Deck Manager', function () {
   })
 
   describe('Dynamic page', function () {
-    let dm, spawn, revert, so, deckManager
-    // Do rewire
-    before(function () {
-      deckManager = rewire('../lib/deckManager')
-    })
+    let dm, spawn, so
     beforeEach(function () {
       so = {
         stdout: new events.EventEmitter(),
       }
-      spawn = sinon.stub().returns(so)
-      revert = deckManager.__set__('spawn', spawn)
+      spawn = sinon.stub(cp, 'spawn').returns(so)
       dm = new deckManager(deck, buttons, {
         sticky: [{ keyIndex: 1, icon: PIXEL }],
         pages: [
@@ -230,9 +237,6 @@ describe('Deck Manager', function () {
           },
         ],
       })
-    })
-    afterEach(function () {
-      revert()
     })
 
     it('should call the command specified on page load', function () {
@@ -246,7 +250,7 @@ describe('Deck Manager', function () {
         if (b) {
           expect(b.btnCfg.keyIndex).to.eql(1)
         } else {
-          expect(b).to.be.null
+          expect(b).to.not.be.ok
         }
       })
       so.stdout.emit(
@@ -266,9 +270,9 @@ describe('Deck Manager', function () {
       )
       buttons.forEach((b, i) => {
         if (i === 1 || i === 3) {
-          expect(b).to.not.be.null
+          expect(b).to.be.ok
         } else {
-          expect(b).to.be.null
+          expect(b).to.not.be.ok
         }
       })
     })
@@ -279,7 +283,7 @@ describe('Deck Manager', function () {
         if (b) {
           expect(b.btnCfg.keyIndex).to.eql(1)
         } else {
-          expect(b).to.be.null
+          expect(b).to.not.be.ok
         }
       })
       expect(con).to.not.be.called
@@ -288,7 +292,7 @@ describe('Deck Manager', function () {
         if (b) {
           expect(b.btnCfg.keyIndex).to.eql(1)
         } else {
-          expect(b).to.be.null
+          expect(b).to.not.be.ok
         }
       })
       expect(con).to.be.calledOnce

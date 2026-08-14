@@ -1,4 +1,3 @@
-const rewire = require('rewire')
 const Promise = require('bluebird')
 const events = require('events')
 const chai = require('chai')
@@ -6,10 +5,19 @@ const expect = chai.expect
 const sinon = require('sinon')
 const sc = require('sinon-chai')
 const sharp = require('sharp')
+const cp = require('node:child_process')
 chai.use(sc)
 
-const buttonController = rewire('../lib/buttonController')
-const deckManager = require('../lib/deckManager')
+const obs = require('obs-websocket-js')
+class FakeOBS {
+  connect() {
+    return Promise.resolve()
+  }
+}
+obs.OBSWebSocket = FakeOBS
+
+const buttonController = require('../test-build/buttonController').default
+const deckManager = require('../test-build/deckManager').default
 
 const PIXEL =
   'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2NYlV/1HwAF7QKTgvPu3QAAAABJRU5ErkJggg=='
@@ -99,14 +107,9 @@ describe('Buttons', function () {
     })
   })
   describe('Actions', function () {
-    let bc, spawn, revertSpawn
+    let bc, spawn
     beforeEach(function () {
-      spawn = sinon.stub()
-      revertSpawn = buttonController.__set__('spawn', spawn)
-    })
-    afterEach(function () {
-      if (bc) bc.stop()
-      revertSpawn()
+      spawn = sinon.stub(cp, 'spawn')
     })
     it('should change brightness', async function () {
       let dm = new deckManager(deck, new Array(6).fill(), {})
@@ -135,7 +138,7 @@ describe('Buttons', function () {
       bc.init()
       dm.buttons[0] = bc
       bc.activate()
-      expect(dm.buttons[0]).to.be.null
+      expect(dm.buttons[0]).to.be.undefined
     })
     it('should start the screensaver', async function () {
       let dm = new deckManager(deck, new Array(6).fill(), {})
@@ -152,18 +155,16 @@ describe('Buttons', function () {
     })
   })
   describe('Dynamic buttons', function () {
-    let spawn, revert, so, bc
+    let spawn, so, bc
     beforeEach(function () {
       so = {
         stdout: new events.EventEmitter(),
         kill: sinon.fake(),
       }
-      spawn = sinon.stub().returns(so)
-      revert = buttonController.__set__('spawn', spawn)
+      spawn = sinon.stub(cp, 'spawn').returns(so)
     })
     afterEach(function () {
       if (bc) bc.stop()
-      revert()
     })
 
     it('call the dynamic command on startup', async function () {
@@ -225,6 +226,11 @@ describe('Buttons', function () {
         {
           deck,
           addTextToImage: function () {
+            return sharp({
+              create: { width: 1, height: 1, channels: 3, background: 'black' },
+            })
+          },
+          createTextImage: function () {
             return sharp({
               create: { width: 1, height: 1, channels: 3, background: 'black' },
             })

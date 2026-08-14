@@ -4,3 +4,4 @@ package-lock.json
 .nyc_output
 build/
 dist/
+test-build/

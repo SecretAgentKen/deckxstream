@@ -12,8 +12,6 @@ import { DeckXstreamConfig } from './types'
 import DeckManager from './deckManager'
 import ButtonController from './buttonController'
 
-//const DeckManager = require('./lib/deckManager');
-
 start()
 
 async function start() {

@@ -5,23 +5,27 @@ const sinon = require('sinon')
 const sc = require('sinon-chai')
 chai.use(sc)
 
-const ssControl = require('../lib/screensaverControl')
+const ssControl = require('../test-build/screensaverControl').default
 const PIXEL =
   'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2NYlV/1HwAF7QKTgvPu3QAAAABJRU5ErkJggg=='
 
 describe('Screen Saver', function () {
-  let deck //, buttons;
+  let deck, dm
   beforeEach(function () {
     deck = {
       clearPanel: sinon.fake(),
       clearKey: sinon.fake(),
-      ICON_SIZE: 32,
-      KEY_COLUMNS: 2,
-      KEY_ROWS: 2,
       fillPanelBuffer: sinon.fake(),
       setBrightness: sinon.fake(),
     }
-    //buttons = new Array(6).fill(0).map(()=>{return {stop: sinon.spy(), start: sinon.spy()};});
+    dm = {
+      deck,
+      ICON_SIZE: 32,
+      KEY_COLUMNS: 2,
+      KEY_ROWS: 2,
+      KEY_SPACING_COLUMNS: 25,
+      KEY_SPACING_ROWS: 25,
+    }
   })
   afterEach(function () {
     sinon.restore()
@@ -29,12 +33,19 @@ describe('Screen Saver', function () {
 
   it('should not allow a bad screensaver', function () {
     sinon.stub(console, 'error')
-    let ss = new ssControl({ deck }, { animation: 'bad path' })
-    expect(ss.init()).to.throw
+    let ss = new ssControl(dm, { animation: 'bad path' })
+    return ss.init().then(
+      function () {
+        throw new Error('Expected init to reject')
+      },
+      function () {
+        // Expected rejection
+      },
+    )
   })
 
   it('should support a single frame', function () {
-    let ss = new ssControl({ deck }, { animation: PIXEL })
+    let ss = new ssControl(dm, { animation: PIXEL })
     ss.init()
     expect(deck.fillPanelBuffer).to.not.be.calledOnce
     return ss.isReady.then(() => {
@@ -47,12 +58,9 @@ describe('Screen Saver', function () {
   describe('GIF support', function () {
     let ss
     beforeEach(function () {
-      ss = new ssControl(
-        { deck },
-        {
-          animation: require('path').join(__dirname, '../test_resources/blink.gif'),
-        },
-      )
+      ss = new ssControl(dm, {
+        animation: require('path').join(__dirname, '../test_resources/blink.gif'),
+      })
       ss.init()
     })
     afterEach(function () {

@@ -2,7 +2,7 @@
   "name": "deckxstream",
   "version": "3.0.0",
   "description": "Elgato Stream Deck controller",
-  "main": "app.js",
+  "main": "dist/app.js",
   "homepage": "https://github.com/SecretAgentKen/deckxstream#readme",
   "repository": {
     "type": "git",
@@ -12,13 +12,14 @@
     "url": "https://github.com/SecretAgentKen/deckxstream/issues"
   },
   "scripts": {
-    "test": "npx nyc mocha",
     "build": "esbuild src/app.ts --bundle --platform=node --outdir=dist --packages=external",
+    "build:test": "tsc -p tsconfig.test.json",
+    "test": "npm run build:test && npx nyc mocha",
     "lint": "eslint && prettier . --check",
     "lint:fix": "eslint --fix && prettier . --write"
   },
   "bin": {
-    "deckxstream": "app.js"
+    "deckxstream": "dist/app.js"
   },
   "engines": {
     "node": ">=24"
@@ -34,6 +35,7 @@
     "bluebird": "^3.7.2",
     "canvas": "^3.2.1",
     "commander": "^14.0.3",
+    "obs-websocket-js": "^5.0.7",
     "sharp": "^0.34.5",
     "zod": "^4.3.6"
   },
@@ -47,9 +49,7 @@
     "eslint": "^10.0.0",
     "mocha": "^10.0.0",
     "nyc": "^15.1.0",
-    "obs-websocket-js": "^5.0.7",
     "prettier": "^3.8.1",
-    "rewire": "^6.0.0",
     "sinon": "^14.0.0",
     "sinon-chai": "^3.7.0",
     "typescript": "^5.9.3",
