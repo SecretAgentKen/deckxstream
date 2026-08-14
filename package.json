@@ -34,9 +34,9 @@
     "@julusian/jpeg-turbo": "^3.0.1",
     "bluebird": "^3.7.2",
     "canvas": "^3.2.1",
-    "commander": "^14.0.3",
+    "commander": "^15.0.0",
     "obs-websocket-js": "^5.0.7",
-    "sharp": "^0.34.5",
+    "sharp": "^0.35.3",
     "zod": "^4.3.6"
   },
   "devDependencies": {
@@ -44,15 +44,15 @@
     "@tsconfig/node24": "^24.0.4",
     "@types/bluebird": "^3.5.42",
     "@types/node": "^24.10.13",
-    "chai": "^4.3.6",
-    "esbuild": "^0.27.3",
+    "chai": "^6.2.2",
+    "esbuild": "^0.28.2",
     "eslint": "^10.0.0",
-    "mocha": "^10.0.0",
-    "nyc": "^15.1.0",
+    "mocha": "^11.8.0",
+    "nyc": "^18.0.0",
     "prettier": "^3.8.1",
-    "sinon": "^14.0.0",
-    "sinon-chai": "^3.7.0",
-    "typescript": "^5.9.3",
+    "sinon": "^22.1.0",
+    "sinon-chai": "^4.0.1",
+    "typescript": "^6.0.3",
     "typescript-eslint": "^8.56.0"
   },
   "keywords": [
@@ -67,7 +67,7 @@
   "allowScripts": {
     "@julusian/jpeg-turbo@3.0.1": true,
     "canvas@3.2.3": true,
-    "esbuild@0.27.7": true,
+    "esbuild@0.28.2": true,
     "node-hid@3.4.0": true,
     "sharp@0.34.5": true
   }

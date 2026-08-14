@@ -3,7 +3,7 @@ const events = require('events')
 const chai = require('chai')
 const expect = chai.expect
 const sinon = require('sinon')
-const sc = require('sinon-chai')
+const sc = require('sinon-chai').default
 const sharp = require('sharp')
 const cp = require('node:child_process')
 chai.use(sc)

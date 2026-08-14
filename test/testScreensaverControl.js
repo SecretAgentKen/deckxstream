@@ -2,7 +2,7 @@ const Promise = require('bluebird')
 const chai = require('chai')
 const expect = chai.expect
 const sinon = require('sinon')
-const sc = require('sinon-chai')
+const sc = require('sinon-chai').default
 chai.use(sc)
 
 const ssControl = require('../test-build/screensaverControl').default
