@@ -6,12 +6,13 @@
   "homepage": "https://github.com/SecretAgentKen/deckxstream#readme",
   "repository": {
     "type": "git",
-    "repository": "https://github.com/SecretAgentKen/deckxstream"
+    "url": "https://github.com/SecretAgentKen/deckxstream"
   },
   "bugs": {
     "url": "https://github.com/SecretAgentKen/deckxstream/issues"
   },
   "scripts": {
+    "prepublishOnly": "npm run build",
     "build": "esbuild src/app.ts --bundle --platform=node --outdir=dist --packages=external",
     "build:test": "tsc -p tsconfig.test.json",
     "test": "npm run build:test && npx nyc mocha",
@@ -69,6 +70,6 @@
     "canvas@3.2.3": true,
     "esbuild@0.28.2": true,
     "node-hid@3.4.0": true,
-    "sharp@0.34.5": true
+    "sharp@0.35.3": true
   }
 }
